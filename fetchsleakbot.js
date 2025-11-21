@@ -12,8 +12,8 @@
     if (scriptSrc.includes('dev')) {
       baseUrl = 'https://sleak-chat.github.io/sleakbot-v2';
       widgetBaseUrl = 'https://widget-v2-sigma.vercel.app';
-    } else if (scriptSrc.includes('localhost')) {
-      baseUrl = 'http://localhost:8000';
+    } else if (scriptSrc.includes('127.0.0.1:')) {
+      baseUrl = 'http://127.0.0.1:5501';
       widgetBaseUrl = 'https://widget-v2-sigma.vercel.app';
     } else {
       baseUrl = 'https://cdn.sleak.chat';
@@ -119,6 +119,7 @@
   }
 
   async function executeSleakbotJs(chatbotId, instanceNumber = null) {
+    let chatId;
     let visitorId;
 
     if (!scriptCookies) {
@@ -155,16 +156,17 @@
         setCookie(key, '', { ...options, expires: -1 });
       }
 
+      chatId = getCookie(`sleakChatId_${chatbotId}`);
       visitorId = getCookie(`sleakVisitorId_${chatbotId}`);
 
-      if (visitorId) {
-        // console.log("cookie exists, value = ",Cookies.get(`sleakVisitorId_${chatbotId}`));
+      if (chatId) {
+        // console.log("cookie exists, value = ",Cookies.get(`sleakChatId_${chatbotId}`));
         // Resetting chat
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('resetChat')) {
-          deleteCookie(`sleakVisitorId_${chatbotId}`, { path: '/' });
-          visitorId = crypto.randomUUID();
-          setCookie(`sleakVisitorId_${chatbotId}`, visitorId, {
+          deleteCookie(`sleakChatId_${chatbotId}`, { path: '/' });
+          chatId = crypto.randomUUID();
+          setCookie(`sleakChatId_${chatbotId}`, chatId, {
             expires: 365,
             sameSite: 'None',
             secure: true,
@@ -176,8 +178,18 @@
           window.history.replaceState(null, '', newUrl);
         }
 
-        visitorId = visitorId = getCookie(`sleakVisitorId_${chatbotId}`);
+        chatId = chatId = getCookie(`sleakChatId_${chatbotId}`);
       } else {
+        chatId = crypto.randomUUID();
+        setCookie(`sleakChatId_${chatbotId}`, chatId, {
+          expires: 365,
+          sameSite: 'None',
+          secure: true,
+          path: '/'
+        });
+      }
+
+      if (!visitorId){
         visitorId = crypto.randomUUID();
         setCookie(`sleakVisitorId_${chatbotId}`, visitorId, {
           expires: 365,
@@ -188,18 +200,24 @@
       }
     } else {
       // fallback to using localStorage
+      if (localStorage.getItem(`sleakChatId_${chatbotId}`)) {
+        chatId = localStorage.getItem(`sleakChatId_${chatbotId}`);
+      } else {
+        chatId = crypto.randomUUID();
+        localStorage.setItem(`sleakChatId_${chatbotId}`, chatId);
+        // console.log("new localStorage = ", chatId);
+      }
+
       if (localStorage.getItem(`sleakVisitorId_${chatbotId}`)) {
-        // console.log("localStorage exists, value = ", localStorage.getItem(`sleakVisitorId_${chatbotId}`));
         visitorId = localStorage.getItem(`sleakVisitorId_${chatbotId}`);
       } else {
         visitorId = crypto.randomUUID();
         localStorage.setItem(`sleakVisitorId_${chatbotId}`, visitorId);
-        // console.log("new localStorage = ", visitorId);
       }
     }
 
     const timestamp = new Date().getTime();
-    const chatbotConfigEndpoint = `${widgetBaseUrl}/api/config?id=${chatbotId}&visitor_id=${visitorId}&t=${timestamp}`;
+    const chatbotConfigEndpoint = `${widgetBaseUrl}/api/config?id=${chatbotId}&chat_id=${chatId}&t=${timestamp}`;
     const chatbotConfigRequest = await fetch(chatbotConfigEndpoint, {
       method: 'get',
       headers: {
@@ -214,7 +232,7 @@
     let widgetOpenFlag = localStorage.getItem(`sleakWidget_${chatbotId}`);
 
     // main code
-    if (chatbotConfig.publishing.published == true) {
+    if (chatbotConfig?.publishing?.published && chatbotConfig?.publishing?.published == true) {
       async function setShadow() {
         // delay setting shadow to avoid flickering
         await new Promise(resolve => setTimeout(resolve, 50));
@@ -237,16 +255,16 @@
       let pagePath = window.location.pathname;
       let iframeWidgetbody;
 
-      window.resetVisitorId = function () {
-        deleteCookie(`sleakVisitorId_${chatbotId}`, { path: '/' });
-        visitorId = crypto.randomUUID();
-        setCookie(`sleakVisitorId_${chatbotId}`, visitorId, {
+      window.resetChatId = function () {
+        deleteCookie(`sleakChatId_${chatbotId}`, { path: '/' });
+        chatId = crypto.randomUUID();
+        setCookie(`sleakChatId_${chatbotId}`, chatId, {
           expires: 365,
           sameSite: 'None',
           secure: true,
           path: '/'
         });
-        iframeWidgetbody.src = widgetBaseUrl + `/${chatbotId}?id=${visitorId}`;
+        iframeWidgetbody.src = widgetBaseUrl + `/${chatbotId}?visitor_id=${visitorId}&chat_id=${chatId}`;
       };
 
       if (placement == 'fullwidth') {
@@ -256,7 +274,7 @@
         } else {
           iframeWidgetbody = document.querySelector('#sleak-widget-iframe');
         }
-        iframeWidgetbody.src = widgetBaseUrl + `/${chatbotId}?id=${visitorId}&placement=fullwidth`;
+        iframeWidgetbody.src = widgetBaseUrl + `/${chatbotId}?visitor_id=${visitorId}&chat_id=${chatId}&placement=fullwidth`;
       } else {
         iframeWidgetbody = document.getElementById('sleak-widget-iframe');
         const sleakWrap = document.querySelector('#sleak-widgetwrap');
@@ -284,6 +302,7 @@
           var mobilePopupHeight = Number(chatbotConfig.btn_offset.y_mobile) + 82;
           sleakButton.style.right = `${chatbotConfig.btn_offset.x_mobile}px`;
           sleakButton.style.bottom = `${chatbotConfig.btn_offset.y_mobile}px`;
+          sleakEmbeddedWidget.style.right = `${chatbotConfig.btn_offset.x_desktop}px`;
           popupListWrap.style.right = `${chatbotConfig.btn_offset.x_mobile}px`;
           popupListWrap.style.bottom = `${mobilePopupHeight}px`;
         }
@@ -291,6 +310,7 @@
         function setStylingDesktop() {
           sleakWrap.style.right = `${chatbotConfig.btn_offset.x_desktop}px`;
           sleakWrap.style.bottom = `${chatbotConfig.btn_offset.y_desktop}px`;
+          sleakEmbeddedWidget.style.right = `${chatbotConfig.btn_offset.x_desktop}px`;
         }
 
         function setStylingMobileMirrored() {
@@ -369,7 +389,7 @@
         let slkBodyRendered = false;
         function slkRenderWidgetBody() {
           return new Promise(resolve => {
-            iframeWidgetbody.src = widgetBaseUrl + `/${chatbotId}?id=${visitorId}`;
+            iframeWidgetbody.src = widgetBaseUrl + `/${chatbotId}?visitor_id=${visitorId}&chat_id=${chatId}`;
             iframeWidgetbody.addEventListener('load', () => resolve(), { once: true });
           });
         }
@@ -467,8 +487,8 @@
             }
 
             const viewportHeight = window.innerHeight;
-            sleakWrap.style.height = viewportHeight + 'px';
-            sleakWrap.style.minHeight = viewportHeight + 'px';
+            sleakWrap.style.height = (viewportHeight - (98 + chatbotConfig.btn_offset.x_desktop)) + 'px';
+            sleakWrap.style.minHeight = (viewportHeight - (98 + chatbotConfig.btn_offset.x_desktop)) + 'px';
 
             /// check for first button click of page load
             if (firstButtonClick) {
@@ -488,7 +508,7 @@
             closeSleakWidget();
 
             if (window.matchMedia('(max-width: 768px)').matches) {
-              document.body.style.overflow = 'auto';
+              document.body.style.overflow = 'hidden';
             }
           }
         };
@@ -718,7 +738,7 @@
                 type,
                 message: args.map(a => String(a)).join(' '),
                 timestamp: new Date().toISOString(),
-                visitor_id: visitorId,
+                chat_id: chatId,
                 chatbot_id: chatbotId,
                 window: 'parent'
               })
@@ -775,15 +795,15 @@
           } else if (event.data.type === 'chatCreated') {
             // console.log('chat created = ', event);
 
-            localStorage.setItem(`slkChatCreated_${chatbotId}_${visitorId}`, 'true');
-            localStorage.removeItem(`slkLocalEventQueue_${chatbotId}_${visitorId}`);
+            localStorage.setItem(`slkChatCreated_${chatbotId}_${chatId}`, 'true');
+            localStorage.removeItem(`slkLocalEventQueue_${chatbotId}_${chatId}`);
             chatCreated = true;
             // console.log('created chat localstorage ');
           } else if (event.data.type === 'initiateTriggerBasedPopup') {
             // console.log('trigger initiateTriggerBasedPopup = ', event);
             window.showTriggerBasedPopup(event.data.payload);
           } else if (event.data.type === 'resetChat') {
-            window.resetVisitorId();
+            window.resetChatId();
           } else if (event.data.type === 'showMessagePopup') {
             window.populatePopup(event.data.payload.avatar, event.data.payload.name, event.data.payload.message);
             if (!window.sleakWidgetOpenState) showPopup();
@@ -796,8 +816,8 @@
 
       function eventHandling() {
         if (!chatCreated) {
-          if (!localStorage.getItem(`slkLocalEventQueue_${chatbotId}_${visitorId}`)) {
-            localStorage.setItem(`slkLocalEventQueue_${chatbotId}_${visitorId}`, JSON.stringify([]));
+          if (!localStorage.getItem(`slkLocalEventQueue_${chatbotId}_${chatId}`)) {
+            localStorage.setItem(`slkLocalEventQueue_${chatbotId}_${chatId}`, JSON.stringify([]));
             // console.log('created slkLocalEventQueue localstorage');
           }
         }
@@ -806,7 +826,7 @@
           // console.log('Captured Event:', event);
 
           if (!chatCreated && event.type == 'sleakNewEvent') {
-            const cookieKey = `slkLocalEventQueue_${chatbotId}_${visitorId}`;
+            const cookieKey = `slkLocalEventQueue_${chatbotId}_${chatId}`;
 
             let currentEvents = localStorage.getItem(cookieKey);
             currentEvents = currentEvents ? JSON.parse(currentEvents) : [];
@@ -894,7 +914,7 @@
 
         if (!chatCreated) {
           // local event queue for if chat does not exist
-          const rawEvents = localStorage.getItem(`slkLocalEventQueue_${chatbotId}_${visitorId}`);
+          const rawEvents = localStorage.getItem(`slkLocalEventQueue_${chatbotId}_${chatId}`);
 
           const parsedEvents = JSON.parse(rawEvents);
 
