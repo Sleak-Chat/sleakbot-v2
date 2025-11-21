@@ -10,11 +10,11 @@
 
     // env control
     if (scriptSrc.includes('dev')) {
-      baseUrl = 'https://development.sleakbot.pages.dev';
-      widgetBaseUrl = 'https://staging.sleak.chat';
+      baseUrl = 'https://sleak-chat.github.io/sleakbot-v2';
+      widgetBaseUrl = 'https://widget-v2-sigma.vercel.app';
     } else if (scriptSrc.includes('localhost')) {
       baseUrl = 'http://localhost:8000';
-      widgetBaseUrl = 'https://staging.sleak.chat';
+      widgetBaseUrl = 'https://widget-v2-sigma.vercel.app';
     } else {
       baseUrl = 'https://cdn.sleak.chat';
       widgetBaseUrl = 'https://widget.sleak.chat';
@@ -740,7 +740,7 @@
       if (slkInstance) return;
 
       window.addEventListener('message', event => {
-        if (event.origin === 'https://staging.sleak.chat' || event.origin === 'https://widget.sleak.chat') {
+        if (event.origin === 'https://widget-v2-sigma.vercel.app/' || event.origin === 'https://widget.sleak.chat') {
           // console.log('Received message:', event);
 
           if (event.data === 'closePopup') {
