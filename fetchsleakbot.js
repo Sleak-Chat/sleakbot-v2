@@ -351,7 +351,7 @@
             Number(chatbotConfig.btn_offset.y_mobile) + 82;
           sleakButton.style.right = `${chatbotConfig.btn_offset.x_mobile}px`;
           sleakButton.style.bottom = `${chatbotConfig.btn_offset.y_mobile}px`;
-          sleakEmbeddedWidget.style.right = `${chatbotConfig.btn_offset.x_desktop}px`;
+          sleakEmbeddedWidget.style.right = `${chatbotConfig.btn_offset.x_mobile}px`;
           popupListWrap.style.right = `${chatbotConfig.btn_offset.x_mobile}px`;
           popupListWrap.style.bottom = `${mobilePopupHeight}px`;
         }
@@ -501,15 +501,16 @@
           liveChatPopup.style.display = "none";
           btnPulse.style.display = "none";
           isTypingIndicator.style.display = "none";
-          
+
           // Animate in - start from hidden state
           sleakEmbeddedWidget.style.opacity = "0";
           sleakEmbeddedWidget.style.transform = "translateY(12px)";
-          sleakEmbeddedWidget.style.transition = "opacity .4s ease, transform .4s ease";
-          
+          sleakEmbeddedWidget.style.transition =
+            "opacity .4s ease, transform .4s ease";
+
           // Force reflow to ensure initial state is applied
           void sleakEmbeddedWidget.offsetWidth;
-          
+
           // Animate to visible state
           setTimeout(() => {
             sleakEmbeddedWidget.classList.add("open");
@@ -523,10 +524,11 @@
           iframeWidgetbody.classList.remove("open");
 
           // Animate out - ensure transition is set
-          sleakEmbeddedWidget.style.transition = "opacity .4s ease, transform .4s ease";
+          sleakEmbeddedWidget.style.transition =
+            "opacity .4s ease, transform .4s ease";
           sleakEmbeddedWidget.style.opacity = "0";
           sleakEmbeddedWidget.style.transform = "translateY(12px)";
-          
+
           // Wait for animation to complete before hiding
           setTimeout(() => {
             sleakEmbeddedWidget.style.display = "none";
@@ -613,7 +615,7 @@
             }, 300);
 
             setTimeout(() => {
-            // Show and animate closed button in
+              // Show and animate closed button in
               sleakWidgetClosedBtn.style.display = "flex";
               sleakWidgetClosedBtn.style.animation = "none";
               void sleakWidgetClosedBtn.offsetWidth;
@@ -888,19 +890,19 @@
 
       window.addEventListener("message", (event) => {
         if (
-          event.origin === "https://widget-v2-sigma.vercel.app/" ||
+          event.origin === "https://widget-v2-sigma.vercel.app" ||
           event.origin === "https://widget.sleak.chat"
         ) {
           // console.log('Received message:', event);
 
-          if (event.data === "closePopup") {
+          if (event.data.type === "closePopup") {
             closeSleakWidget();
-          } else if (event.data === "toggleChat") {
+          } else if (event.data.type === "toggleChat") {
             // console.log('toggleChat');
             toggleSleakWidget();
-          } else if (event.data === "operatorChanged") {
+          } else if (event.data.type === "operatorChanged") {
             playAudio(sleakChimeOperator);
-          } else if (event.data === "domInitialized") {
+          } else if (event.data.type === "domInitialized") {
             const sleakPageLoad = {
               type: "sleakPageLoad",
               payload: {
@@ -908,23 +910,16 @@
                 fullUrl: window.location.href,
               },
             };
-
-            // console.log('sleakPageLoad =', sleakPageLoad);
-
             iframeWidgetbody.contentWindow.postMessage(sleakPageLoad, "*");
-            // iframePopup.contentWindow.postMessage(sleakPageLoad, '*');
-
             setShadow();
             eventHandling();
-          } else if (event.data === "sleakChatInitiated") {
+          } else if (event.data.type === "sleakChatInitiated") {
             pushGtmEvent(event);
-          } else if (event.data === "sleakSentContactDetails") {
+          } else if (event.data.type === "sleakSentContactDetails") {
             pushGtmEvent(event);
-          } else if (event.data === "sleakHumanHandoffActivated") {
+          } else if (event.data.type === "sleakHumanHandoffActivated") {
             pushGtmEvent(event);
           } else if (event.data.type === "chatCreated") {
-            // console.log('chat created = ', event);
-
             localStorage.setItem(
               `slkChatCreated_${chatbotId}_${chatId}`,
               "true"
@@ -947,9 +942,25 @@
             );
             if (!window.sleakWidgetOpenState) showPopup();
             playAudio(sleakChime);
+          } else if (event.data.type === "sleakChatClosed") {
+            deleteCookie(`sleakChatId_${chatbotId}`, { path: "/" });
+
+            iframeWidgetbody.src =
+              widgetBaseUrl + `/${chatbotId}?visitor_id=${visitorId}`;
+          } else if (event.data.type === "sleakChatOpened") {
+            chatId = event.data.chatId;
+            setCookie(`sleakChatId_${chatbotId}`, chatId, {
+              expires: 365,
+              sameSite: "None",
+              secure: true,
+              path: "/",
+            });
+            iframeWidgetbody.src =
+              widgetBaseUrl +
+              `/${chatbotId}?visitor_id=${visitorId}&chat_id=${chatId}`;
           } else {
             if (event.data.type !== "showOutputLogsAdmin")
-              console.log("no declared event");
+              console.log(event.data);
           }
         }
       });
