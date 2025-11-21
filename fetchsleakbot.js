@@ -321,9 +321,6 @@
           ".sleak-popup-chatinpupt-input-wrapper"
         );
         const btnPulse = document.querySelector("#sleak-button-pulse");
-        const btnNotificaiton = document.querySelector(
-          "#sleak-btn-notification-count"
-        );
         const isTypingIndicator = document.querySelector(
           "#sleak-loader-container"
         );
@@ -497,40 +494,49 @@
 
         function openSleakWidget() {
           sleakEmbeddedWidget.style.display = "flex";
-          sleakWidgetwrap.style.transform = "translateY(20px)";
-
-          sleakEmbeddedWidget.style.opacity = "0";
           sleakPopup.style.display = "none";
 
           // triggerbased
           chatInput.style.display = "none";
           liveChatPopup.style.display = "none";
           btnPulse.style.display = "none";
-          btnNotificaiton.style.display = "none";
           isTypingIndicator.style.display = "none";
-
-          sleakEmbeddedWidget.style.transition = "opacity 0.15s ease-in-out";
-          sleakEmbeddedWidget.style.transition = "transform 0.15s ease-in-out";
-          sleakWidgetwrap.style.transition = "transform 0.15s ease-in-out";
-
-          setTimeout(function () {
+          
+          // Animate in - start from hidden state
+          sleakEmbeddedWidget.style.opacity = "0";
+          sleakEmbeddedWidget.style.transform = "translateY(12px)";
+          sleakEmbeddedWidget.style.transition = "opacity .4s ease, transform .4s ease";
+          
+          // Force reflow to ensure initial state is applied
+          void sleakEmbeddedWidget.offsetWidth;
+          
+          // Animate to visible state
+          setTimeout(() => {
+            sleakEmbeddedWidget.classList.add("open");
             sleakEmbeddedWidget.style.opacity = "1";
-            sleakWidgetwrap.style.transform = "translateY(0)";
-          }, 50);
+            sleakEmbeddedWidget.style.transform = "translateY(0)";
+          }, 10);
         }
 
         window.closeSleakWidget = function () {
           sleakEmbeddedWidget.classList.remove("open");
           iframeWidgetbody.classList.remove("open");
 
-          sleakEmbeddedWidget.style.display = "none";
-          sleakPopup.style.display = "none";
+          // Animate out - ensure transition is set
+          sleakEmbeddedWidget.style.transition = "opacity .4s ease, transform .4s ease";
+          sleakEmbeddedWidget.style.opacity = "0";
+          sleakEmbeddedWidget.style.transform = "translateY(12px)";
+          
+          // Wait for animation to complete before hiding
+          setTimeout(() => {
+            sleakEmbeddedWidget.style.display = "none";
+            sleakPopup.style.display = "none";
 
-          chatInput.style.display = "none";
-          liveChatPopup.style.display = "none";
-          btnPulse.style.display = "none";
-          btnNotificaiton.style.display = "none";
-          isTypingIndicator.style.display = "none";
+            chatInput.style.display = "none";
+            liveChatPopup.style.display = "none";
+            btnPulse.style.display = "none";
+            isTypingIndicator.style.display = "none";
+          }, 300);
         };
 
         window.toggleSleakWidget = async function () {
@@ -749,13 +755,6 @@
                 btnPulse.style.display = "flex";
                 btnPulse.style.opacity = "1";
                 btnPulse.style.transform = "scale(1)";
-
-                btnNotificaiton.style.transform = "scale(0.5)";
-                btnNotificaiton.style.display = "flex";
-                setTimeout(function () {
-                  btnNotificaiton.style.opacity = "1";
-                  btnNotificaiton.style.transform = "scale(1)";
-                }, 50);
               }
             }, 500);
           }, 7000);

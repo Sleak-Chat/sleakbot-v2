@@ -129,6 +129,7 @@
   transition: box-shadow 6s ease-in-out;
   height: 100% !important;
   min-height: 100% !important;
+  border: solid 2px #e6e6e6;
 }
 
 #sleak-loader {
@@ -381,19 +382,6 @@
   align-self: center;
 }
 
-#sleak-btn-notification {
-  box-sizing: border-box;
-  z-index: 20;
-  top: 1px;
-  right: 1px;
-  position: absolute;
-  height: 15px;
-  width: 15px;
-  background-color: #48e385;
-  border-radius: 99px;
-  border: solid 3px #fff;
-}
-
 #sleak-widgetwrap {
   pointer-events: none;
   z-index: 999999999;
@@ -428,6 +416,15 @@
 
   position: absolute;
   right: 0;
+  
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity .4s ease, transform .4s ease;
+}
+
+#sleak-body-embed.open {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 #sleak-widget-open {
