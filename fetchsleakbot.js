@@ -242,18 +242,14 @@
       chatbotConfig?.publishing?.published &&
       chatbotConfig?.publishing?.published == true
     ) {
-      async function setShadow() {
-        // delay setting shadow to avoid flickering
-        await new Promise((resolve) => setTimeout(resolve, 50));
-        iframeWidgetbody.style.boxShadow =
-          "0px 4px 8px -2px rgba(0, 0, 0, 0.1)";
-      }
       let sleakChime = new Audio(
         "https://cdn.sleak.chat/assets/sleak-chime.mp3"
       );
+      sleakChime.preload = "auto";
       let sleakChimeOperator = new Audio(
         "https://cdn.sleak.chat/assets/sleak-chime-operatorjoined.mp3"
       );
+      sleakChimeOperator.preload = "auto";
       let userHasInteracted = false;
       window.addEventListener("click", () => (userHasInteracted = true), {
         once: true,
@@ -261,12 +257,30 @@
       window.addEventListener("keydown", () => (userHasInteracted = true), {
         once: true,
       });
+      
       function playAudio(audio) {
-        if (!userHasInteracted) return;
-        try {
-          audio.play();
-        } catch (error) {
-          console.error("Error playing audio:", error);
+        // Reset audio to beginning if it was previously played
+        audio.currentTime = 0;
+        // Ensure audio is loaded
+        if (audio.readyState >= 2) {
+          // Audio is loaded, try to play
+          audio.play().catch((error) => {
+            // Silently handle autoplay restrictions - this is expected behavior
+            if (error.name !== 'NotAllowedError') {
+              console.error("Error playing audio:", error);
+            }
+          });
+        } else {
+          // Wait for audio to load, then play
+          audio.addEventListener('canplaythrough', function playWhenReady() {
+            audio.removeEventListener('canplaythrough', playWhenReady);
+            audio.play().catch((error) => {
+              if (error.name !== 'NotAllowedError') {
+                console.error("Error playing audio:", error);
+              }
+            });
+          }, { once: true });
+          audio.load();
         }
       }
 
@@ -343,34 +357,52 @@
         var viewportWidth2 = window.innerWidth;
 
         function setStylingMobile() {
-          var mobilePopupHeight =
-            Number(chatbotConfig.btn_offset.y_mobile) + 82;
-          sleakButton.style.right = `${chatbotConfig.btn_offset.x_mobile}px`;
-          sleakButton.style.bottom = `${chatbotConfig.btn_offset.y_mobile}px`;
-          popupListWrap.style.right = `${chatbotConfig.btn_offset.x_mobile}px`;
-          popupListWrap.style.bottom = `${mobilePopupHeight}px`;
+          Object.assign(sleakButton.style, {
+            left: `unset`,
+            right: `${chatbotConfig.btn_offset.x_mobile}px`,
+            bottom: `${chatbotConfig.btn_offset.y_mobile}px`,
+          });
 
-          sleakWrap.style.right = `${chatbotConfig.btn_offset.x_desktop}px`;
-          sleakWrap.style.bottom = `${chatbotConfig.btn_offset.y_desktop}px`;
+          Object.assign(popupListWrap.style, {
+            right: `${chatbotConfig.btn_offset.x_mobile}px`,
+            left: `unset`,
+            bottom: `${chatbotConfig.btn_offset.y_mobile + 82}px`,
+          });
         }
 
         function setStylingDesktop() {
-          sleakWrap.style.right = `${chatbotConfig.btn_offset.x_desktop}px`;
-          sleakWrap.style.bottom = `${chatbotConfig.btn_offset.y_desktop}px`;
+          Object.assign(sleakButton.style, {
+            right: `${chatbotConfig.btn_offset.x_desktop}px`,
+            bottom: `${chatbotConfig.btn_offset.y_desktop}px`,
+          });
 
-          sleakEmbeddedWidget.style.height = `calc(100% - 98px - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
+          Object.assign(popupListWrap.style, {
+            right: `${chatbotConfig.btn_offset.x_desktop}px`,
+            left: `unset`,
+            bottom: `${chatbotConfig.btn_offset.y_desktop + 82}px`,
+          });
+
+          sleakWidgetwrap.style.right = `${chatbotConfig.btn_offset.x_desktop}px`;
+          sleakWidgetwrap.style.bottom = `${chatbotConfig.btn_offset.y_desktop}px`;
+          sleakWidgetwrap.style.height = `calc(100% - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
+          sleakWidgetwrap.style.width = `calc(100% - (2 * ${chatbotConfig.btn_offset.x_desktop}px))`;
         }
 
         function setStylingMobileMirrored() {
-          var mobilePopupHeight =
-            Number(chatbotConfig.btn_offset.y_mobile) + 82;
-          sleakButton.style.left = `${chatbotConfig.btn_offset.x_mobile}px`;
-          sleakButton.style.bottom = `${chatbotConfig.btn_offset.y_mobile}px`;
-          popupListWrap.style.left = `${chatbotConfig.btn_offset.x_mobile}px`;
-          popupListWrap.style.bottom = `${mobilePopupHeight}px`;
+          Object.assign(sleakButton.style, {
+            right: `unset`,
+            left: `${chatbotConfig.btn_offset.x_mobile}px`,
+            bottom: `${chatbotConfig.btn_offset.y_mobile}px`,
+          });
+
+          Object.assign(popupListWrap.style, {
+            left: `${chatbotConfig.btn_offset.x_mobile}px`,
+            right: `unset`,
+            bottom: `${chatbotConfig.btn_offset.y_mobile + 82}px`,
+          });
           popupListWrap.style.alignItems = "start";
           sleakWrap.style.alignItems = "flex-start";
-          sleakEmbeddedWidget.style.setProperty(
+          sleakWrap.style.setProperty(
             "justify-content",
             "flex-start",
             "important"
@@ -378,61 +410,65 @@
         }
 
         function setStylingDesktopMirrored() {
-          Object.assign(sleakWrap.style, {
-            left: `${chatbotConfig.btn_offset.x_desktop}px`,
-            bottom: `${chatbotConfig.btn_offset.y_desktop}px`,
-            width: "100vw",
+          Object.assign(sleakWidgetwrap.style, {
             justifyContent: "flex-start",
             alignItems: "flex-start",
-          });
-
-          Object.assign(sleakWidgetwrap.style, {
-            width: "420px",
-            height: "100%",
+            left: `${chatbotConfig.btn_offset.x_desktop}px`,
+            bottom: `${chatbotConfig.btn_offset.y_desktop}px`,
           });
 
           Object.assign(popupListWrap.style, {
-            right: "unset",
-            left: "0",
+            left: `${chatbotConfig.btn_offset.x_desktop}px`,
+            right: `unset`,
+            bottom: `${chatbotConfig.btn_offset.y_desktop + 82}px`,
           });
 
           Object.assign(sleakButton.style, {
             right: "unset",
-            left: "0",
+            left: `${chatbotConfig.btn_offset.x_desktop}px`,
+            bottom: `${chatbotConfig.btn_offset.y_desktop}px`,
           });
           sleakButton.style.setProperty("transform", "scaleX(-1)", "important");
-          sleakEmbeddedWidget.style.justifyContent = "flex-start";
 
           document.querySelector("#popup-list-wrap").style.alignItems = "start";
         }
 
-        if (viewportWidth2 < 480) {
-          if (
-            !chatbotConfig.btn_offset.align_right ||
-            chatbotConfig.btn_offset.align_right.mobile !== false
-          ) {
-            setStylingMobile();
+        function applyResponsiveStyling() {
+          viewportWidth2 = window.innerWidth;
+          if (viewportWidth2 < 480) {
+            if (
+              !chatbotConfig.btn_offset.align_right ||
+              chatbotConfig.btn_offset.align_right.mobile !== false
+            ) {
+              setStylingMobile();
+            } else {
+              setStylingMobileMirrored();
+            }
           } else {
-            setStylingMobileMirrored();
-          }
-        } else {
-          if (
-            !chatbotConfig.btn_offset.align_right ||
-            chatbotConfig.btn_offset.align_right.desktop !== false
-          ) {
-            setStylingDesktop();
-          } else {
-            setStylingDesktopMirrored();
+            if (
+              !chatbotConfig.btn_offset.align_right ||
+              chatbotConfig.btn_offset.align_right.desktop !== false
+            ) {
+              setStylingDesktop();
+            } else {
+              setStylingDesktopMirrored();
+            }
           }
         }
+
+        // Apply styling on initialization
+        applyResponsiveStyling();
+
+        // Apply styling on window resize
+        window.addEventListener("resize", applyResponsiveStyling);
 
         // btn
         var btnColor = chatbotConfig.primary_color;
         sleakBtnContainer.style.backgroundColor = btnColor;
         if (chatbotConfig.background_image) {
           sleakBtnContainer.style.backgroundImage = `url("${chatbotConfig.background_image}")`;
-          sleakWidgetOpenedBtn.style.opacity = "0";
-          sleakWidgetClosedBtn.style.opacity = "0";
+          sleakWidgetOpenedBtn.remove();
+          sleakWidgetClosedBtn.remove();
         }
 
         function slkShowBtn() {
@@ -474,7 +510,8 @@
           }
           if (window.innerWidth > 420) {
             setTimeout(() => {
-              if (window.sleakWidgetOpenState == false) window.toggleSleakWidget();
+              if (window.sleakWidgetOpenState == false)
+                window.toggleSleakWidget();
             }, 2000);
           }
         }
@@ -537,31 +574,27 @@
 
         window.toggleFullScreen = async function () {
           if (window.sleakWidgetFullScreen === false) {
-            if (window.innerWidth > 480) {
-              iframeWidgetbody.style.width = `calc(100% - (2 * ${chatbotConfig.btn_offset.x_desktop}px))`;
-            } else {
-              iframeWidgetbody.style.width = `100%`;
-            }
-
             sleakButton.classList.add("full-chat-widget");
-            sleakEmbeddedWidget.style.height = `calc(100% - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
-            iframeWidgetbody.style.maxHeight = `${document.body.clientHeight}px`;
-            sleakEmbeddedWidget.style.bottom = `0px`
+            // sleakWidgetwrap.style.height = `calc(100% - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
+
+            sleakEmbeddedWidget.style.maxWidth = `720px`;
+            sleakEmbeddedWidget.style.maxHeight = `calc(${document.body.clientHeight}px - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
+            sleakEmbeddedWidget.style.bottom = `0`;
+
             window.sleakWidgetFullScreen = true;
           } else {
-            sleakEmbeddedWidget.style.height = `calc(100% - 98px - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
-            iframeWidgetbody.style.width = ``;
-            iframeWidgetbody.style.maxHeight = ``;
-            iframeWidgetbody.style.height = ``;
+            sleakEmbeddedWidget.style.maxWidth = ``;
+            sleakEmbeddedWidget.style.maxHeight = ``;
+            sleakEmbeddedWidget.style.height = ``;
             sleakEmbeddedWidget.style.bottom = ``;
 
             setTimeout(() => {
               sleakButton.classList.remove("full-chat-widget");
-            }, 300)
+            }, 300);
 
             window.sleakWidgetFullScreen = false;
           }
-        }
+        };
 
         window.toggleSleakWidget = async function () {
           // check if widget is open
@@ -651,7 +684,7 @@
           document
             .querySelector("[close-widget]")
             .addEventListener("click", function (event) {
-              console.log(true)
+              console.log(true);
               event.stopPropagation();
               window.closeSleakWidget();
             });
@@ -762,11 +795,9 @@
               }
             }, 500);
           }, 7000);
-
         };
 
         if (!hasPopupBeenTriggered && !blockDefaultPopup) {
-
           const viewportWidth = window.innerWidth;
 
           if (viewportWidth < 480) {
@@ -895,7 +926,10 @@
         ) {
           // console.log("Received message:", event);
 
-          if (event.data.type === "closePopup" || event.data.type === "toggleChat") {
+          if (
+            event.data.type === "closePopup" ||
+            event.data.type === "toggleChat"
+          ) {
             window.toggleSleakWidget();
           } else if (event.data.type === "operatorChanged") {
             playAudio(sleakChimeOperator);
@@ -908,7 +942,6 @@
               },
             };
             iframeWidgetbody.contentWindow.postMessage(sleakPageLoad, "*");
-            setShadow();
             eventHandling();
           } else if (event.data.type === "sleakChatInitiated") {
             pushGtmEvent(event);
@@ -966,7 +999,7 @@
             window.toggleFullScreen();
           } else if (event.data.type === "closeActiveChat") {
             deleteCookie(`sleakChatId_${chatbotId}`, { path: "/" });
-          }else {
+          } else {
             if (event.data.type !== "showOutputLogsAdmin")
               console.log(event.data);
           }

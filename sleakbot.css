@@ -2,6 +2,12 @@
   --sleak-loading-dot-color: #7e79f0;
 }
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 #sleak-container {
   all: initial;
 }
@@ -117,20 +123,23 @@
 
 #sleak-widget-container {
   height: 100%;
+  width: 100%;
+  position: relative;
   z-index: 1;
+  display: flex;
+  justify-content: flex-end;
 }
 
 #sleak-widget-iframe {
-  display: flex;
+  display: block;
   pointer-events: auto !important;
   z-index: 1 !important;
-  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 25px 50px -12px #00000040;
-  max-height: 700px;
-  border: solid 2px #e6e6e6;
+  min-width: 0;
+  border: none;
   box-sizing: border-box;
-  transition: all .8s cubic-bezier(.4, 0, .2, 1);
+  width: 100%;
+  height: 100%;
 }
 
 #sleak-loader {
@@ -252,7 +261,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding-right: 32px;
 }
 
 .sleak-popup-embed-statuswrap-text {
@@ -266,12 +274,12 @@
 /**/
 
 #popup-list-wrap {
-  position: relative;
+  position: absolute;
   display: flex;
   flex-direction: column;
   height: auto;
   width: auto;
-  bottom: 82px;
+  bottom: 98px;
   transition: height linear;
 }
 
@@ -318,25 +326,6 @@
 }
 
 /**/
-
-.sleak-embed {
-  z-index: 1;
-  width: 420px;
-  height: 600px;
-  background-color: rgba(255, 255, 255, 0);
-  justify-content: center;
-  align-items: flex-end;
-  display: none;
-  top: auto;
-  bottom: 0%;
-  left: auto;
-  right: 0;
-  z-index: 99999999;
-  height: auto;
-  min-height: 0;
-  justify-content: flex-end;
-  position: static;
-}
 
 #sleak-buttonwrapper {
   height: 64px;
@@ -417,23 +406,30 @@
 }
 
 #sleak-body-embed {
+  background-color: #fff;
+  box-shadow: 0 25px 50px -12px #00000040;
   height: 100%;
+  max-height: 700px;
   pointer-events: auto;
   bottom: 98px;
-  width: 100%;
   border-radius: 20px;
-  max-width: 720px;
+  border: solid 2px #e6e6e6;
+  width: 100%;
+  max-width: 420px;
   position: absolute;
-  right: 0;
-  
+  overflow: hidden;
+  z-index: 99999999;
+  min-height: 0;
   opacity: 0;
   transform: translateY(12px);
-  transition: all .8s cubic-bezier(.4, 0, .2, 1);
+  transition: all .8s cubic-bezier(.4, 0, .2, 1), border .0s ease-in, border-radius .0s ease-in;
+  pointer-events: none;
 }
 
 #sleak-body-embed.open {
   opacity: 1;
   transform: translateY(0);
+  pointer-events: all;
 }
 
 #sleak-widget-open {
@@ -609,6 +605,12 @@
     pointer-events: auto;
   }
 
+  #sleak-widget-container {
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
   #sleak-widgetwrap {
     z-index: 999999999 !important;
     width: 100vw;
@@ -621,7 +623,6 @@
     display: flex;
     max-height: unset !important;
     box-shadow: unset;
-    inset: 0 !important;
   }
 
   #sleak-widget-iframe {
@@ -634,7 +635,9 @@
     min-width: 100vw;
     border-radius: 0;
     border: solid 0px #e6e6e6 !important;
-    max-height: none;
+    max-height: 800px;
+    box-shadow: 0 0 0 100vw rgba(0, 0, 0, 0.5);
+    transition: none !important;
   }
 
   #sleak-bgoverlay {
@@ -665,8 +668,12 @@
     width: 100vw;
     height: 100%;
     z-index: 1;
+    max-width: unset !important;
     max-height: unset !important;
     height: 100% !important;
+    border-radius: 0;
+    border: solid 0px #e6e6e6 !important;
+    align-items: flex-end;
   }
 
   #sleak-buttonwrap {
@@ -674,7 +681,7 @@
     inset: unset;
   }
 
-  .sleak-embed:focus {
+  #sleak-body-embed:focus {
     margin-bottom: 0;
   }
 }
