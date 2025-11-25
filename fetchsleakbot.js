@@ -14,7 +14,8 @@
       widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
     } else if (scriptSrc.includes("127.0.0.1:")) {
       baseUrl = "http://127.0.0.1:5501";
-      widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
+      widgetBaseUrl = "http://localhost:3000";
+      // widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
     } else {
       baseUrl = "https://cdn.sleak.chat";
       widgetBaseUrl = "https://widget.sleak.chat";
@@ -60,11 +61,6 @@
         document.body.appendChild(sleakHtml);
       }
     }
-
-    // function appendSleakJsToBody() {
-    //   // open widget
-
-    // }
 
     function fetchAndAppendHtml() {
       return fetch(sleakHtml)
@@ -359,7 +355,8 @@
         function setStylingDesktop() {
           sleakWrap.style.right = `${chatbotConfig.btn_offset.x_desktop}px`;
           sleakWrap.style.bottom = `${chatbotConfig.btn_offset.y_desktop}px`;
-          sleakEmbeddedWidget.style.right = `${chatbotConfig.btn_offset.x_desktop}px`;
+
+          sleakEmbeddedWidget.style.height = `calc(100% - 98px - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
         }
 
         function setStylingMobileMirrored() {
@@ -402,11 +399,12 @@
             left: "0",
           });
           sleakButton.style.setProperty("transform", "scaleX(-1)", "important");
+          sleakEmbeddedWidget.style.justifyContent = "flex-start";
 
           document.querySelector("#popup-list-wrap").style.alignItems = "start";
         }
 
-        if (viewportWidth2 < 1024) {
+        if (viewportWidth2 < 480) {
           if (
             !chatbotConfig.btn_offset.align_right ||
             chatbotConfig.btn_offset.align_right.mobile !== false
@@ -438,7 +436,6 @@
         function slkShowBtn() {
           sleakButton.style.opacity = "0";
           sleakButton.style.transform = "scale(0.8)";
-          sleakButton.style.transition = "all 0.1s ease";
           setTimeout(function () {
             sleakButton.style.opacity = "1";
             sleakButton.style.transform = "scale(1)";
@@ -464,6 +461,7 @@
         }
 
         window.sleakWidgetOpenState = false;
+        window.sleakWidgetFullScreen = false;
         let firstButtonClick = true;
 
         // widget preview
@@ -472,9 +470,9 @@
             slkRenderWidgetBody();
             slkBodyRendered = true;
           }
-          if (window.innerWidth > 1024) {
+          if (window.innerWidth > 420) {
             setTimeout(() => {
-              if (sleakWidgetOpenState == false) window.toggleSleakWidget();
+              if (window.sleakWidgetOpenState == false) window.toggleSleakWidget();
             }, 2000);
           }
         }
@@ -505,8 +503,6 @@
           // Animate in - start from hidden state
           sleakEmbeddedWidget.style.opacity = "0";
           sleakEmbeddedWidget.style.transform = "translateY(12px)";
-          sleakEmbeddedWidget.style.transition =
-            "opacity .4s ease, transform .4s ease";
 
           // Force reflow to ensure initial state is applied
           void sleakEmbeddedWidget.offsetWidth;
@@ -522,10 +518,6 @@
         window.closeSleakWidget = function () {
           sleakEmbeddedWidget.classList.remove("open");
           iframeWidgetbody.classList.remove("open");
-
-          // Animate out - ensure transition is set
-          sleakEmbeddedWidget.style.transition =
-            "opacity .4s ease, transform .4s ease";
           sleakEmbeddedWidget.style.opacity = "0";
           sleakEmbeddedWidget.style.transform = "translateY(12px)";
 
@@ -541,9 +533,35 @@
           }, 300);
         };
 
+        window.toggleFullScreen = async function () {
+          if (window.sleakWidgetFullScreen === false) {
+            if (window.innerWidth > 480) {
+              iframeWidgetbody.style.width = `calc(100% - (2 * ${chatbotConfig.btn_offset.x_desktop}px))`;
+            } else {
+              iframeWidgetbody.style.width = `100%`;
+            }
+
+            sleakButton.classList.add("full-chat-widget");
+            sleakEmbeddedWidget.style.height = `calc(100% - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
+            iframeWidgetbody.style.maxHeight = `${document.body.clientHeight}px`;
+            sleakEmbeddedWidget.style.bottom = `0px`
+            window.sleakWidgetFullScreen = true;
+          } else {
+            sleakEmbeddedWidget.style.height = `calc(100% - 98px - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
+            iframeWidgetbody.style.width = ``;
+            iframeWidgetbody.style.maxHeight = ``;
+            iframeWidgetbody.style.height = ``;
+            sleakEmbeddedWidget.style.bottom = ``;
+
+            sleakButton.classList.remove("full-chat-widget");
+
+            window.sleakWidgetFullScreen = false;
+          }
+        }
+
         window.toggleSleakWidget = async function () {
           // check if widget is open
-          if (sleakWidgetOpenState == false) {
+          if (window.sleakWidgetOpenState == false) {
             sleakWidgetClosedBtn.classList.add("image-hide");
             sleakWidgetClosedBtn.style.animation = "none";
             // Force reflow to restart animation
@@ -565,16 +583,10 @@
             }, 150);
 
             if (firstButtonClick && !slkBodyRendered) {
-              // sleakWidgetLoader.style.display = 'block';
-              // console.log('Rendering widget body...');
               await slkRenderWidgetBody();
-              // sleakWidgetLoader.style.display = 'none';
-              sleakWidgetOpenState = true;
-              // console.log('Widget body rendered.');
-              // changeButtonState(true);
+              window.sleakWidgetOpenState = true;
             } else {
-              sleakWidgetOpenState = true;
-              // changeButtonState(true);
+              window.sleakWidgetOpenState = true;
             }
 
             openSleakWidget();
@@ -582,12 +594,6 @@
             if (window.matchMedia("(max-width: 768px)").matches) {
               document.body.style.overflow = "hidden";
             }
-
-            const viewportHeight = window.innerHeight;
-            sleakWrap.style.height =
-              viewportHeight - (98 + chatbotConfig.btn_offset.x_desktop) + "px";
-            sleakWrap.style.minHeight =
-              viewportHeight - (98 + chatbotConfig.btn_offset.x_desktop) + "px";
 
             /// check for first button click of page load
             if (firstButtonClick) {
@@ -602,7 +608,7 @@
 
               if (firstButtonClick) firstButtonClick = false;
             }
-          } else if (sleakWidgetOpenState == true) {
+          } else if (window.sleakWidgetOpenState == true) {
             sleakWidgetOpenedBtn.classList.add("image-hide");
             sleakWidgetOpenedBtn.style.animation = "none";
             void sleakWidgetOpenedBtn.offsetWidth;
@@ -622,8 +628,8 @@
               sleakWidgetClosedBtn.style.animation = "";
             }, 150);
 
-            sleakWidgetOpenState = false;
-            closeSleakWidget();
+            window.sleakWidgetOpenState = false;
+            window.closeSleakWidget();
 
             if (window.matchMedia("(max-width: 768px)").matches) {
               document.body.style.overflow = "hidden";
@@ -634,22 +640,23 @@
         (async function btnClickEventHandling() {
           document.querySelectorAll("[open-widget]").forEach((btn) => {
             btn.addEventListener("click", function () {
-              toggleSleakWidget();
+              window.toggleSleakWidget();
             });
           });
 
           document
             .querySelector("[close-widget]")
             .addEventListener("click", function (event) {
+              console.log(true)
               event.stopPropagation();
-              closeSleakWidget();
+              window.closeSleakWidget();
             });
         })();
 
         // event listener for scrolling
         if (window.matchMedia("(max-width: 768px)").matches) {
           window.addEventListener("scroll", function () {
-            if (sleakWidgetOpenState == true) {
+            if (window.sleakWidgetOpenState == true) {
               const viewportHeightScroll = window.innerHeight;
               document.getElementById("sleak-widgetwrap").style.height =
                 viewportHeightScroll + "px";
@@ -683,23 +690,15 @@
           sessionStorage.setItem(sessionStorageKey, "true");
         }
 
-        // console.log(sleakWidgetOpenState);
-
-        // pagePath = '/asdf'; // remove limne in prod
-        // console.log('pagePath:', pagePath);
         const popupRules = chatbotConfig.popups?.rules || [];
-        // console.log('popupRules:', popupRules);
 
         let pagePopup;
         if (popupRules.length > 0) {
           pagePopup = popupRules.find((rule) => rule.page == pagePath);
           if (pagePopup) {
-            // console.log('rendering widget body');
             slkRenderWidgetBody();
             slkBodyRendered = true;
-            // console.log('disabling default popup as pagePopup exists = ', pagePopup);
             blockDefaultPopup = true;
-            // console.log('blockDefaultPopup = ', blockDefaultPopup);
           }
         }
 
@@ -718,7 +717,7 @@
           liveChatPopup.querySelector("#sleak-operatorchanged-name").innerText =
             payload.name;
 
-          if (!sleakWidgetOpenState) {
+          if (!window.sleakWidgetOpenState) {
             liveChatPopup.style.transition =
               "opacity 0.2s ease, transform 0.2s ease";
             liveChatPopup.style.transform = "translateY(20px)";
@@ -736,14 +735,13 @@
           setTimeout(function () {
             blockDefaultPopup = false;
             if (!chatCreated) {
-              // console.log('showing main popup');
-              if (!sleakWidgetOpenState) {
+              if (!window.sleakWidgetOpenState) {
                 showPopup();
                 playAudio(sleakChime);
               }
             }
             setTimeout(function () {
-              if (!sleakWidgetOpenState) {
+              if (!window.sleakWidgetOpenState) {
                 chatInput.style.transition =
                   "opacity 0.2s ease, transform 0.2s ease";
                 chatInput.style.transform = "translateY(20px)";
@@ -761,19 +759,16 @@
             }, 500);
           }, 7000);
 
-          // sessionStorageTriggerBased.setItem(sessionStorageKey, 'true');
         };
 
         if (!hasPopupBeenTriggered && !blockDefaultPopup) {
-          // console.log('popup localStorage does not exist');
 
           const viewportWidth = window.innerWidth;
-          // console.log(viewportWidth);
 
-          if (viewportWidth < 479) {
+          if (viewportWidth < 480) {
             if (chatbotConfig.popup.mobile == true) {
               setTimeout(function () {
-                if (sleakWidgetOpenState == false) {
+                if (window.sleakWidgetOpenState == false) {
                   showPopup();
                   if (chatbotConfig.popup.chime.mobile == true) {
                     playAudio(sleakChime);
@@ -784,7 +779,7 @@
           } else {
             if (chatbotConfig.popup.desktop == true) {
               setTimeout(function () {
-                if (sleakWidgetOpenState == false) {
+                if (window.sleakWidgetOpenState == false) {
                   showPopup();
                   if (chatbotConfig.popup.chime.desktop == true) {
                     playAudio(sleakChime);
@@ -804,7 +799,7 @@
               },
               "*"
             );
-            if (!sleakWidgetOpenState) {
+            if (!window.sleakWidgetOpenState) {
               window.toggleSleakWidget();
             }
           };
@@ -891,15 +886,13 @@
       window.addEventListener("message", (event) => {
         if (
           event.origin === "https://widget-v2-sigma.vercel.app" ||
-          event.origin === "https://widget.sleak.chat"
+          event.origin === "https://widget.sleak.chat" ||
+          event.origin === "http://localhost:3000"
         ) {
-          // console.log('Received message:', event);
+          // console.log("Received message:", event);
 
-          if (event.data.type === "closePopup") {
-            closeSleakWidget();
-          } else if (event.data.type === "toggleChat") {
-            // console.log('toggleChat');
-            toggleSleakWidget();
+          if (event.data.type === "closePopup" || event.data.type === "toggleChat") {
+            window.toggleSleakWidget();
           } else if (event.data.type === "operatorChanged") {
             playAudio(sleakChimeOperator);
           } else if (event.data.type === "domInitialized") {
@@ -933,7 +926,17 @@
             // console.log('trigger initiateTriggerBasedPopup = ', event);
             window.showTriggerBasedPopup(event.data.payload);
           } else if (event.data.type === "resetChat") {
-            window.resetChatId();
+            chatId = event.data.chatId;
+            deleteCookie(`sleakChatId_${chatbotId}`, { path: "/" });
+            setCookie(`sleakChatId_${chatbotId}`, chatId, {
+              expires: 365,
+              sameSite: "None",
+              secure: true,
+              path: "/",
+            });
+            // iframeWidgetbody.src =
+            //   widgetBaseUrl +
+            //   `/${chatbotId}?visitor_id=${visitorId}&chat_id=${chatId}`;
           } else if (event.data.type === "showMessagePopup") {
             window.populatePopup(
               event.data.payload.avatar,
@@ -955,10 +958,11 @@
               secure: true,
               path: "/",
             });
-            iframeWidgetbody.src =
-              widgetBaseUrl +
-              `/${chatbotId}?visitor_id=${visitorId}&chat_id=${chatId}`;
-          } else {
+          } else if (event.data.type === "toggleFullScreen") {
+            window.toggleFullScreen();
+          } else if (event.data.type === "closeActiveChat") {
+            deleteCookie(`sleakChatId_${chatbotId}`, { path: "/" });
+          }else {
             if (event.data.type !== "showOutputLogsAdmin")
               console.log(event.data);
           }
@@ -1103,22 +1107,9 @@
         // custom fields
         function customFields() {
           const customFieldsConfig = chatbotConfig.custom_fields_config;
-          // // example payload for the custom_fields_config object
-          // customFieldsConfig = [
-          //   {
-          //     key: 'email',
-          //     updateChatName: true
-          //   },
-          //   {
-          //     key: 'user_id',
-          //     updateChatName: false
-          //   }
-          // ];
-          // console.log('customFieldsConfig:', customFieldsConfig);
 
           // end user will push custom fields in an object to this function
           window.sleakPushCustomFields = function (customFields) {
-            // console.log('customFields:', customFields);
             // validate if the object is valid
             if (!customFields || typeof customFields !== "object") {
               console.error("invalid type. object expected.");
@@ -1167,17 +1158,17 @@
           window.dispatchEvent(
             new CustomEvent("sleakCustomFieldsHandlerInitialized")
           );
-
-          // set example payload for the customFields argument and call function
-          // examplePayload = {
-          //   email: 'email@email.com',
-          //   user_id: '123456'
-          // };
-          // window.sleakPushCustomFields(examplePayload);
         }
 
         // console.log('chatbotConfig', chatbotConfig);
         if (chatbotConfig.custom_fields_config) customFields();
+
+        function sendWidth() {
+          handleEvent({ type: "sleakWidthResize", width: window.innerWidth });
+        }
+
+        window.addEventListener("resize", sendWidth);
+        sendWidth();
       }
     }
   }
