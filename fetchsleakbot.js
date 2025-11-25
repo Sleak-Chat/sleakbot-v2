@@ -347,9 +347,11 @@
             Number(chatbotConfig.btn_offset.y_mobile) + 82;
           sleakButton.style.right = `${chatbotConfig.btn_offset.x_mobile}px`;
           sleakButton.style.bottom = `${chatbotConfig.btn_offset.y_mobile}px`;
-          sleakEmbeddedWidget.style.right = `${chatbotConfig.btn_offset.x_mobile}px`;
           popupListWrap.style.right = `${chatbotConfig.btn_offset.x_mobile}px`;
           popupListWrap.style.bottom = `${mobilePopupHeight}px`;
+
+          sleakWrap.style.right = `${chatbotConfig.btn_offset.x_desktop}px`;
+          sleakWrap.style.bottom = `${chatbotConfig.btn_offset.y_desktop}px`;
         }
 
         function setStylingDesktop() {
@@ -553,7 +555,9 @@
             iframeWidgetbody.style.height = ``;
             sleakEmbeddedWidget.style.bottom = ``;
 
-            sleakButton.classList.remove("full-chat-widget");
+            setTimeout(() => {
+              sleakButton.classList.remove("full-chat-widget");
+            }, 300)
 
             window.sleakWidgetFullScreen = false;
           }

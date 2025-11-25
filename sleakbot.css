@@ -335,7 +335,6 @@
   height: auto;
   min-height: 0;
   justify-content: flex-end;
-  display: none;
   position: static;
 }
 
@@ -423,7 +422,7 @@
   bottom: 98px;
   width: 100%;
   border-radius: 20px;
-
+  max-width: 720px;
   position: absolute;
   right: 0;
   
@@ -602,7 +601,7 @@
   }
 }
 
-@media screen and (max-width: 479px) {
+@media screen and (max-width: 480px) {
   #sleak-loadingwrap {
     height: 100%;
     width: 100%;
@@ -667,11 +666,12 @@
     height: 100%;
     z-index: 1;
     max-height: unset !important;
-    /*margin-bottom: -95px;*/
+    height: 100% !important;
   }
 
   #sleak-buttonwrap {
     z-index: 0;
+    inset: unset;
   }
 
   .sleak-embed:focus {
