@@ -590,7 +590,7 @@
           setTimeout(() => {
             popupListContainer.style.display = "none";
             sleakEmbeddedWidget.style.display = "none";
-          }, 800);
+          }, 400);
 
           if (window.sleakWidgetOpenState){
             sleakWidgetOpenedBtn.classList.add("image-hide");
@@ -634,7 +634,7 @@
 
             setTimeout(() => {
               sleakButton.classList.remove("full-chat-widget");
-            }, 300);
+            }, 150);
 
             window.sleakWidgetFullScreen = false;
           }
@@ -663,7 +663,6 @@
               sleakWidgetOpenedBtn.style.animation = "";
             }, 150);
             
-            openSleakWidget();
             
             if (firstButtonClick && !slkBodyRendered) {
               await slkRenderWidgetBody();
@@ -671,7 +670,8 @@
             } else {
               window.sleakWidgetOpenState = true;
             }
-
+            
+            openSleakWidget();
 
             if (window.matchMedia("(max-width: 768px)").matches) {
               document.body.style.overflow = "hidden";
