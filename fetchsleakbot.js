@@ -331,6 +331,7 @@
         const sleakWidgetwrap = document.getElementById(
           "sleak-widget-container"
         );
+        const popupListContainer = document.getElementById("popup-list-container");
         const liveChatPopup = document.getElementById(
           "sleak-operatorchanged-popup"
         );
@@ -575,42 +576,44 @@
         }
 
         window.closeSleakWidget = function () {
-          window.sleakWidgetOpenState = false;
-
           sleakEmbeddedWidget.classList.remove("open");
           iframeWidgetbody.classList.remove("open");
           sleakEmbeddedWidget.style.opacity = "0";
           sleakEmbeddedWidget.style.transform = "translateY(12px)";
 
+          Object.assign(popupListContainer.style, {
+            transform: "translateY(12px)",
+            opacity: "0",
+          })
+
           // Wait for animation to complete before hiding
           setTimeout(() => {
+            popupListContainer.style.display = "none";
             sleakEmbeddedWidget.style.display = "none";
-            sleakPopup.style.display = "none";
-
-            chatInput.style.display = "none";
-            liveChatPopup.style.display = "none";
-            btnPulse.style.display = "none";
-            isTypingIndicator.style.display = "none";
           }, 800);
 
-          sleakWidgetOpenedBtn.classList.add("image-hide");
-          sleakWidgetOpenedBtn.style.animation = "none";
-          void sleakWidgetOpenedBtn.offsetWidth;
-          sleakWidgetOpenedBtn.style.animation = "";
+          if (window.sleakWidgetOpenState){
+            sleakWidgetOpenedBtn.classList.add("image-hide");
+            sleakWidgetOpenedBtn.style.animation = "none";
+            void sleakWidgetOpenedBtn.offsetWidth;
+            sleakWidgetOpenedBtn.style.animation = "";
+  
+            // Wait for animation to complete, then hide
+            setTimeout(() => {
+              sleakWidgetOpenedBtn.style.display = "none";
+              sleakWidgetOpenedBtn.classList.remove("image-hide");
+            }, 300);
+  
+            setTimeout(() => {
+              // Show and animate closed button in
+              sleakWidgetClosedBtn.style.display = "flex";
+              sleakWidgetClosedBtn.style.animation = "none";
+              void sleakWidgetClosedBtn.offsetWidth;
+              sleakWidgetClosedBtn.style.animation = "";
+            }, 150);
+          }
 
-          // Wait for animation to complete, then hide
-          setTimeout(() => {
-            sleakWidgetOpenedBtn.style.display = "none";
-            sleakWidgetOpenedBtn.classList.remove("image-hide");
-          }, 300);
-
-          setTimeout(() => {
-            // Show and animate closed button in
-            sleakWidgetClosedBtn.style.display = "flex";
-            sleakWidgetClosedBtn.style.animation = "none";
-            void sleakWidgetClosedBtn.offsetWidth;
-            sleakWidgetClosedBtn.style.animation = "";
-          }, 150);
+          window.sleakWidgetOpenState = false;
         };
 
         window.toggleFullScreen = async function (expanded = false) {
@@ -659,7 +662,9 @@
               void sleakWidgetOpenedBtn.offsetWidth;
               sleakWidgetOpenedBtn.style.animation = "";
             }, 150);
-
+            
+            openSleakWidget();
+            
             if (firstButtonClick && !slkBodyRendered) {
               await slkRenderWidgetBody();
               window.sleakWidgetOpenState = true;
@@ -667,7 +672,6 @@
               window.sleakWidgetOpenState = true;
             }
 
-            openSleakWidget();
 
             if (window.matchMedia("(max-width: 768px)").matches) {
               document.body.style.overflow = "hidden";
@@ -703,7 +707,7 @@
           });
 
           document
-            .querySelector("[close-widget]")
+            .querySelector("[close-popup]")
             .addEventListener("click", function (event) {
               event.stopPropagation();
               window.closeSleakWidget();

@@ -111,7 +111,7 @@
   height: auto;
   width: auto;
   align-items: end;
-  transition: height linear;
+  transition: all .4s ease-in-out;
 }
 
 #sleak-loader-container {
