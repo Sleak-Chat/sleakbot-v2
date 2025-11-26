@@ -498,15 +498,16 @@
         slkShowBtn();
 
         let slkBodyRendered = false;
-        function slkRenderWidgetBody() {
-          return new Promise((resolve) => {
-            iframeWidgetbody.src =
-              widgetBaseUrl +
-              `/${chatbotId}?visitor_id=${visitorId}&chat_id=${chatId}`;
-            iframeWidgetbody.addEventListener("load", () => resolve(), {
-              once: true,
-            });
-          });
+        function slkRenderWidgetBody(callback) {
+          iframeWidgetbody.src =
+            widgetBaseUrl +
+            `/${chatbotId}?visitor_id=${visitorId}&chat_id=${chatId}`;
+        
+          iframeWidgetbody.addEventListener(
+            "load",
+            () => callback && callback(),
+            { once: true }
+          );
         }
         if (chatCreated || widgetOpenFlag) {
           // console.log('chat created or widget already opened, rendering widget');
@@ -665,11 +666,14 @@
             }, 150);
             
             if (firstButtonClick && !slkBodyRendered) {
-              await slkRenderWidgetBody();
-              console.log('Rendered widget')
+              slkRenderWidgetBody(() => {
+                window.sleakWidgetOpenState = true;
+                openSleakWidget();
+              });
+            } else {
+              window.sleakWidgetOpenState = true;
+              openSleakWidget();
             }
-            window.sleakWidgetOpenState = true;
-            openSleakWidget();
 
             if (window.matchMedia("(max-width: 768px)").matches) {
               document.body.style.overflow = "hidden";
