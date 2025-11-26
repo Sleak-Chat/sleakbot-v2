@@ -5,17 +5,15 @@
     return;
   }
 
-  async function injectSleakScript(chatbotId, instanceNumber = null) {
-    // if (!['793042b0-1a02-4cec-ae45-502cb7983d17', 'f71a3fb5-7dcd-4611-878a-39a78c5b334f'].includes(chatbotId)) return;
-
+  async function injectSleakScript(chatbotId, instanceNumber = null, dev) {
     // env control
-    if (scriptSrc.includes("dev")) {
-      baseUrl = "https://sleak-chat.github.io/sleakbot-v2";
-      widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
-    } else if (scriptSrc.includes("127.0.0.1:")) {
+    if (scriptSrc.includes("127.0.0.1:")) {
       baseUrl = "http://127.0.0.1:5501";
       widgetBaseUrl = "http://localhost:3000";
       // widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
+    } else if (dev === true) {
+      baseUrl = "https://sleak-chat.github.io/sleakbot-v2";
+      widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
     } else {
       baseUrl = "https://cdn.sleak.chat";
       widgetBaseUrl = "https://widget.sleak.chat";
@@ -114,12 +112,14 @@
       instances.forEach((instance) => {
         const instanceNumber = instance.getAttribute("slk-instance");
         const chatbotId = instance.getAttribute("chatbot-id");
-        injectSleakScript(chatbotId, instanceNumber);
+        const dev = JSON.parse(instance.getAttribute("dev"));
+        injectSleakScript(chatbotId, instanceNumber, dev);
       });
     });
   } else {
     const chatbotId = sleakbotScriptTag.getAttribute("chatbot-id");
-    injectSleakScript(chatbotId);
+    const dev = JSON.parse(sleakbotScriptTag.getAttribute("dev"));
+    injectSleakScript(chatbotId, null, dev);
   }
 
   async function executeSleakbotJs(chatbotId, instanceNumber = null) {
