@@ -664,14 +664,11 @@
               sleakWidgetOpenedBtn.style.animation = "";
             }, 150);
             
-            
             if (firstButtonClick && !slkBodyRendered) {
               await slkRenderWidgetBody();
-              window.sleakWidgetOpenState = true;
-            } else {
-              window.sleakWidgetOpenState = true;
+              console.log('Rendered widget')
             }
-            
+            window.sleakWidgetOpenState = true;
             openSleakWidget();
 
             if (window.matchMedia("(max-width: 768px)").matches) {
