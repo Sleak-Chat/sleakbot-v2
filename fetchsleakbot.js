@@ -257,7 +257,7 @@
       window.addEventListener("keydown", () => (userHasInteracted = true), {
         once: true,
       });
-      
+
       function playAudio(audio) {
         // Reset audio to beginning if it was previously played
         audio.currentTime = 0;
@@ -266,20 +266,24 @@
           // Audio is loaded, try to play
           audio.play().catch((error) => {
             // Silently handle autoplay restrictions - this is expected behavior
-            if (error.name !== 'NotAllowedError') {
+            if (error.name !== "NotAllowedError") {
               console.error("Error playing audio:", error);
             }
           });
         } else {
           // Wait for audio to load, then play
-          audio.addEventListener('canplaythrough', function playWhenReady() {
-            audio.removeEventListener('canplaythrough', playWhenReady);
-            audio.play().catch((error) => {
-              if (error.name !== 'NotAllowedError') {
-                console.error("Error playing audio:", error);
-              }
-            });
-          }, { once: true });
+          audio.addEventListener(
+            "canplaythrough",
+            function playWhenReady() {
+              audio.removeEventListener("canplaythrough", playWhenReady);
+              audio.play().catch((error) => {
+                if (error.name !== "NotAllowedError") {
+                  console.error("Error playing audio:", error);
+                }
+              });
+            },
+            { once: true }
+          );
           audio.load();
         }
       }
@@ -353,6 +357,14 @@
         const slkPopupBodyMessage = document.querySelector(
           "#sleak-popup-embed-body"
         );
+        const sleakMobileHandle = document.querySelector(
+          "#sleak-mobile-handle"
+        );
+
+        let isDragging = false;
+        let startY = 0;
+        let currentY = 0;
+        let dragDistance = 0;
 
         var viewportWidth2 = window.innerWidth;
 
@@ -530,6 +542,11 @@
         );
 
         function openSleakWidget() {
+          // Reset drag state
+          isDragging = false;
+          dragDistance = 0;
+          sleakWidgetwrap.style.transform = `unset`;
+
           sleakEmbeddedWidget.style.display = "flex";
           sleakPopup.style.display = "none";
 
@@ -555,6 +572,8 @@
         }
 
         window.closeSleakWidget = function () {
+          window.sleakWidgetOpenState = false;
+
           sleakEmbeddedWidget.classList.remove("open");
           iframeWidgetbody.classList.remove("open");
           sleakEmbeddedWidget.style.opacity = "0";
@@ -569,7 +588,26 @@
             liveChatPopup.style.display = "none";
             btnPulse.style.display = "none";
             isTypingIndicator.style.display = "none";
+          }, 800);
+
+          sleakWidgetOpenedBtn.classList.add("image-hide");
+          sleakWidgetOpenedBtn.style.animation = "none";
+          void sleakWidgetOpenedBtn.offsetWidth;
+          sleakWidgetOpenedBtn.style.animation = "";
+
+          // Wait for animation to complete, then hide
+          setTimeout(() => {
+            sleakWidgetOpenedBtn.style.display = "none";
+            sleakWidgetOpenedBtn.classList.remove("image-hide");
           }, 300);
+
+          setTimeout(() => {
+            // Show and animate closed button in
+            sleakWidgetClosedBtn.style.display = "flex";
+            sleakWidgetClosedBtn.style.animation = "none";
+            void sleakWidgetClosedBtn.offsetWidth;
+            sleakWidgetClosedBtn.style.animation = "";
+          }, 150);
         };
 
         window.toggleFullScreen = async function () {
@@ -646,26 +684,6 @@
               if (firstButtonClick) firstButtonClick = false;
             }
           } else if (window.sleakWidgetOpenState == true) {
-            sleakWidgetOpenedBtn.classList.add("image-hide");
-            sleakWidgetOpenedBtn.style.animation = "none";
-            void sleakWidgetOpenedBtn.offsetWidth;
-            sleakWidgetOpenedBtn.style.animation = "";
-
-            // Wait for animation to complete, then hide
-            setTimeout(() => {
-              sleakWidgetOpenedBtn.style.display = "none";
-              sleakWidgetOpenedBtn.classList.remove("image-hide");
-            }, 300);
-
-            setTimeout(() => {
-              // Show and animate closed button in
-              sleakWidgetClosedBtn.style.display = "flex";
-              sleakWidgetClosedBtn.style.animation = "none";
-              void sleakWidgetClosedBtn.offsetWidth;
-              sleakWidgetClosedBtn.style.animation = "";
-            }, 150);
-
-            window.sleakWidgetOpenState = false;
             window.closeSleakWidget();
 
             if (window.matchMedia("(max-width: 768px)").matches) {
@@ -684,7 +702,6 @@
           document
             .querySelector("[close-widget]")
             .addEventListener("click", function (event) {
-              console.log(true);
               event.stopPropagation();
               window.closeSleakWidget();
             });
@@ -856,6 +873,63 @@
             });
           });
         })();
+
+        function handleDragStart(e) {
+          if (!window.sleakWidgetOpenState) return;
+          isDragging = true;
+          const touch = e.touches ? e.touches[0] : e;
+          startY = touch.clientY;
+          if (sleakMobileHandle) {
+            sleakMobileHandle.style.cursor = "grabbing";
+          }
+        }
+
+        function handleDragMove(e) {
+          if (!isDragging || !window.sleakWidgetOpenState) return;
+          e.preventDefault();
+          const touch = e.touches ? e.touches[0] : e;
+          currentY = touch.clientY;
+          dragDistance = currentY - startY;
+
+          // Only allow dragging down (positive values)
+          if (dragDistance > 0) {
+            sleakWidgetwrap.style.transform = `translateY(${dragDistance}px)`;
+          }
+        }
+
+        function handleDragEnd(e) {
+          if (!isDragging || !window.sleakWidgetOpenState) return;
+          isDragging = false;
+
+          if (dragDistance > 100) {
+            // Close widget if dragged more than 100px
+            window.closeSleakWidget();
+
+            if (window.matchMedia("(max-width: 768px)").matches) {
+              document.body.style.overflow = "auto";
+            }
+          } else {
+            // Reset position if dragged less than 100px
+            sleakWidgetwrap.style.transform = "translateY(0)";
+          }
+
+          dragDistance = 0;
+        }
+
+        if (sleakMobileHandle) {
+          // Touch events for mobile
+          sleakMobileHandle.addEventListener("touchstart", handleDragStart, {
+            passive: false,
+          });
+          sleakMobileHandle.addEventListener("touchmove", handleDragMove, {
+            passive: false,
+          });
+          sleakMobileHandle.addEventListener("touchend", handleDragEnd);
+
+          sleakMobileHandle.addEventListener("click", () =>
+            window.closeSleakWidget()
+          );
+        }
       }
 
       document.addEventListener("visibilitychange", function () {
