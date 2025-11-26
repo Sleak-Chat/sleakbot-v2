@@ -400,7 +400,7 @@
 
           sleakWidgetwrap.style.right = `${chatbotConfig.btn_offset.x_desktop}px`;
           sleakWidgetwrap.style.bottom = `${chatbotConfig.btn_offset.y_desktop}px`;
-          sleakWidgetwrap.style.height = `calc(100% - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
+          sleakWidgetwrap.style.height = `calc(100% - 98px - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
           sleakWidgetwrap.style.width = `calc(100% - (2 * ${chatbotConfig.btn_offset.x_desktop}px))`;
         }
 
@@ -619,7 +619,7 @@
         window.toggleFullScreen = async function (expanded = false) {
           if (expanded === true) {
             sleakButton.classList.add("full-chat-widget");
-            // sleakWidgetwrap.style.height = `calc(100% - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
+            sleakWidgetwrap.style.height = `calc(100% - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
 
             sleakEmbeddedWidget.style.maxWidth = `720px`;
             sleakEmbeddedWidget.style.maxHeight = `calc(${document.body.clientHeight}px - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
@@ -627,6 +627,7 @@
 
             window.sleakWidgetFullScreen = true;
           } else {
+            sleakWidgetwrap.style.height = `calc(100% - 98px - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
             sleakEmbeddedWidget.style.maxWidth = ``;
             sleakEmbeddedWidget.style.maxHeight = ``;
             sleakEmbeddedWidget.style.height = ``;
