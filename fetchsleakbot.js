@@ -610,8 +610,8 @@
           }, 150);
         };
 
-        window.toggleFullScreen = async function () {
-          if (window.sleakWidgetFullScreen === false) {
+        window.toggleFullScreen = async function (expanded = false) {
+          if (expanded === true) {
             sleakButton.classList.add("full-chat-widget");
             // sleakWidgetwrap.style.height = `calc(100% - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
 
@@ -1070,7 +1070,7 @@
               path: "/",
             });
           } else if (event.data.type === "toggleFullScreen") {
-            window.toggleFullScreen();
+            window.toggleFullScreen(event.data.expanded);
           } else if (event.data.type === "closeActiveChat") {
             deleteCookie(`sleakChatId_${chatbotId}`, { path: "/" });
           } else {
