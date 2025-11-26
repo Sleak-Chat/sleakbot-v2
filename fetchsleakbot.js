@@ -15,8 +15,11 @@
       baseUrl = "https://sleak-chat.github.io/sleakbot-v2";
       widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
     } else {
-      baseUrl = "https://cdn.sleak.chat";
-      widgetBaseUrl = "https://widget.sleak.chat";
+      // baseUrl = "https://cdn.sleak.chat";
+      // widgetBaseUrl = "https://widget.sleak.chat";
+
+      baseUrl = "https://sleak-chat.github.io/sleakbot-v2";
+      widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
     }
     const fileName = placement === "fullwidth" ? "sleakbot-fw" : "sleakbot";
 
