@@ -8,12 +8,10 @@
   box-sizing: border-box;
 }
 
-/* #sleak-container */
 #sleak-container {
   all: initial;
 }
 
-/* #sleak-widgetwrap */
 #sleak-widgetwrap {
   pointer-events: none;
   z-index: 999999999;
@@ -30,7 +28,6 @@
   height: 100%;
 }
 
-/* #sleak-widget-container */
 #sleak-widget-container {
   height: 100%;
   width: 100%;
@@ -41,7 +38,6 @@
   justify-content: flex-end;
 }
 
-/* #sleak-body-embed */
 #sleak-body-embed {
   box-shadow: 0 25px 50px -12px #00000040;
   height: 100%;
@@ -69,7 +65,6 @@
   pointer-events: all;
 }
 
-/* #sleak-mobile-handle */
 #sleak-mobile-handle{
   z-index: 9999;
   position: absolute;
@@ -85,7 +80,6 @@
   display: none;
 }
 
-/* #sleak-widget-iframe */
 #sleak-widget-iframe {
   background-color: #fff;
   display: block;
@@ -99,7 +93,6 @@
   height: 100%;
 }
 
-/* #popup-list-wrap */
 #popup-list-wrap {
   position: absolute;
   display: flex;
@@ -110,7 +103,6 @@
   transition: height linear;
 }
 
-/* #popup-list-container */
 #popup-list-container {
   position: relative;
   display: flex;
@@ -122,7 +114,6 @@
   transition: height linear;
 }
 
-/* #sleak-loader-container */
 #sleak-loader-container {
   background-color: #fff;
   display: none;
@@ -139,7 +130,6 @@
   margin-right: 12px;
 }
 
-/* .sleak-loader */
 .sleak-loader {
   background-color: #fff;
   color: grey;
@@ -152,7 +142,6 @@
   align-self: center !important;
 }
 
-/* .sleak-loading-dot */
 @keyframes blink {
   50% {
     fill: transparent;
@@ -169,7 +158,6 @@
   animation-delay: 500ms;
 }
 
-/* #sleak-operatorchanged-popup */
 #sleak-operatorchanged-popup {
   display: none;
   align-items: center;
@@ -186,7 +174,6 @@
   pointer-events: auto;
 }
 
-/* #sleak-operatorchanged-text */
 #sleak-operatorchanged-text {
   color: #6b6b6b; /* Default text color */
   font-size: 11px;
@@ -200,7 +187,6 @@
   color: #000;
 }
 
-/* .sleak-popup-embed */
 .sleak-popup-embed {
   display: none;
   z-index: 9999999999;
@@ -218,7 +204,6 @@
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-/* .sleak-popup-embed-container */
 .sleak-popup-embed-container {
   display: flex;
   flex-direction: column;
@@ -227,7 +212,6 @@
   gap: 8px;
 }
 
-/* .sleak-popup-embed-headercontainer */
 .sleak-popup-embed-headercontainer {
   display: flex;
   width: 100%;
@@ -235,7 +219,6 @@
   justify-content: space-between;
 }
 
-/* .sleak-popup-embed-header */
 .sleak-popup-embed-header {
   display: flex;
   align-items: center;
@@ -244,7 +227,6 @@
   height: max-content;
 }
 
-/* .sleak-popup-embed-headerwrap */
 .sleak-popup-embed-headerwrap {
   display: flex;
   align-items: center;
@@ -252,14 +234,12 @@
   gap: 12px;
 }
 
-/* .sleak-popup-embed-avatar */
 .sleak-popup-embed-avatar {
   border-radius: 99px;
   height: 16px;
   width: 16px;
 }
 
-/* .sleak-popup-embed-agentname */
 .sleak-popup-embed-agentname {
   font-size: 12px;
   line-height: 16px;
@@ -271,7 +251,6 @@
   text-overflow: ellipsis;
 }
 
-/* .sleak-popup-embed-closebtn */
 .sleak-popup-embed-closebtn {
   position: absolute;
   right: 10px;
@@ -288,14 +267,12 @@
   background-color: #f6f6f6;
 }
 
-/* .sleak-popup-embed-closebtn-icon */
 .sleak-popup-embed-closebtn-icon {
   opacity: 0.6;
   height: 22px;
   width: 22px;
 }
 
-/* .sleak-popup-embed-body */
 .sleak-popup-embed-body {
   max-height: none;
   min-height: auto;
@@ -317,7 +294,6 @@
   font-size: 10px;
 }
 
-/* .sleak-popup-embed-statusindicator */
 .sleak-popup-embed-statusindicator {
   height: 4px;
   width: 4px;
@@ -326,7 +302,6 @@
   outline: 2px solid rgba(72, 227, 133, 0.3);
 }
 
-/* .sleak-popup-embed-statuswrap-text */
 .sleak-popup-embed-statuswrap-text {
   color: rgba(51, 51, 51, 0.8);
   font-size: 8px;
@@ -335,7 +310,6 @@
   font-weight: 300;
 }
 
-/* .sleak-popup-chatinpupt-input-wrapper */
 .sleak-popup-chatinpupt-input-wrapper {
   position: relative;
   display: none;
@@ -366,7 +340,6 @@
   outline: 3px solid var(--sleak-loading-dot-color) !important;
 }
 
-/* #sleak-popup-chatinpupt-widget-textarea */
 #sleak-popup-chatinpupt-widget-textarea {
   display: flex;
   flex-direction: column;
@@ -382,7 +355,6 @@
   border-radius: 16px;
 }
 
-/* #sleak-popup-chatinpupt-send-button-wrap */
 #sleak-popup-chatinpupt-send-button-wrap {
   display: flex;
   flex-direction: row;
@@ -397,7 +369,6 @@
   border: none !important;
 }
 
-/* #sleak-popup-chatinpupt-submit-message-form-button */
 #sleak-popup-chatinpupt-submit-message-form-button {
   width: 32px;
   height: 32px;
@@ -459,7 +430,6 @@
   width: 40px;
 }
 
-/* #sleak-button-pulse */
 #sleak-button-pulse {
   display: none;
   z-index: -1;
@@ -477,7 +447,6 @@
   transition: all 0.1s ease-in;
 }
 
-/* #sleak-btn-notification-count */
 #sleak-btn-notification-count {
   display: none;
   height: 18px;
@@ -499,7 +468,6 @@
   transition: all 0.2s ease;
 }
 
-/* #sleak-buttonwrapper */
 #sleak-buttonwrapper {
   height: 64px;
   width: 64px;
@@ -511,7 +479,6 @@
   pointer-events: none;
 }
 
-/* #sleak-buttonshadow */
 #sleak-buttonshadow {
   top: 0;
   left: 0;
@@ -525,7 +492,6 @@
   align-self: center;
 }
 
-/* #sleak-btn-container */
 #sleak-btn-container {
   z-index: 9;
   width: auto;
@@ -549,7 +515,6 @@
   background-color: #ffffff; /* fallback color */
 }
 
-/* #sleak-btn-openclosed */
 #sleak-btn-openclosed {
   width: 64px;
   height: 64px;
@@ -565,7 +530,6 @@
   position: absolute;
 }
 
-/* #sleak-widget-open, #sleak-widget-closed, #sleak-button-spinner */
 #sleak-widget-open,
 #sleak-widget-closed,
 #sleak-button-spinner {
@@ -624,7 +588,6 @@
   }
 }
 
-/* #sleak-bgoverlay */
 #sleak-bgoverlay {
   z-index: 0;
   width: 0;
@@ -633,7 +596,6 @@
   max-width: 0;
 }
 
-/* Media Queries */
 @media screen and (max-width: 767px) and (orientation: landscape) {
   #sleak-container {
     display: none !important;
