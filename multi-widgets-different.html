@@ -11,7 +11,8 @@
         height: 100vh;
       }
       .sleak-instance-wrapper {
-        width: 480px;
+        max-width: 600px;
+        width: 100%;
         height: 600px;
         box-sizing: border-box;
         display: flex;
@@ -23,17 +24,13 @@
         position: relative;
       }
     </style>
+
+    <script id="sleakbot" src="http://localhost:8001/fetchsleakbot.js" chatbot-id="d167f594-ccfe-41b3-93a9-7f4bcc321317" slk-instance="1"></script>
   </head>
   <body>
     <div class="sleak-container">
       <div class="sleak-instance-wrapper">
-        <script id="sleakbot" src="http://localhost:8001/fetchsleakbot.js" chatbot-id="d167f594-ccfe-41b3-93a9-7f4bcc321317" slk-instance="1" placement="fullwidth"></script>
-      </div>
-      <div class="sleak-instance-wrapper">
-        <script chatbot-id="6972ea32-3e5e-4d96-9d36-e65e91cad947" slk-instance="2" placement="fullwidth"></script>
-      </div>
-      <div class="sleak-instance-wrapper">
-        <script chatbot-id="edbb5a9d-d3c4-4e5d-9e8c-f8695df7048b" slk-instance="3" placement="fullwidth"></script>
+        <script slk-instance="2" chatbot-id="d167f594-ccfe-41b3-93a9-7f4bcc321317" placement="fullwidth"></script>
       </div>
     </div>
   </body>

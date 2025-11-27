@@ -1,15 +1,16 @@
-#sleak-body-embed {
+#sleak-full-body-embed {
   height: 100%;
   width: 100%;
 }
 
-#sleak-widget-iframe {
+#sleak-full-body-embed #sleak-widget-iframe {
   z-index: 1 !important;
   border-radius: 20px;
   transition: box-shadow 3s ease-in-out;
   width: 100% !important;
   height: 100% !important;
   display: block !important;
+  pointer-events: auto !important;
 }
 
 #fullwidthwrapper {

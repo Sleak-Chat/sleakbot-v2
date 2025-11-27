@@ -15,7 +15,9 @@
   const isInstance = sleakbotScriptTag.getAttribute("slk-instance");
   let instances = null;
 
-  async function injectSleakScript(chatbotId, instanceNumber = null, dev) {
+  async function injectSleakScript(chatbotId, instanceNumber = null, dev, instancePlacement = null) {
+    // Use instancePlacement if provided and not empty, otherwise fall back to the placement from #sleakbot tag
+    const currentPlacement = (instancePlacement !== null && instancePlacement !== "") ? instancePlacement : placement;
     // env control
     if (scriptSrc.includes("localhost")) {
       baseUrl = "http://localhost:8001";
@@ -31,18 +33,27 @@
       baseUrl = "https://sleak-chat.github.io/sleakbot-v2";
       widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
     }
-    const fileName = placement === "fullwidth" ? "sleakbot-fw" : "sleakbot";
+    const fileName = currentPlacement === "fullwidth" ? "sleakbot-fw" : "sleakbot";
 
     const sleakHtml = `${baseUrl}/${fileName}.html`;
     const sleakCss = `${baseUrl}/${fileName}.css`;
 
     async function appendStylesheet(url) {
-      var link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.type = "text/css";
-      link.href = url;
-      link.id = "sleak-css";
-      document.head.appendChild(link);
+      // Check if this exact stylesheet URL is already loaded to avoid duplicates
+      const existingLink = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).find(
+        link => link.href === url || link.getAttribute('href') === url
+      );
+      
+      if (!existingLink) {
+        // Create unique CSS link ID per instance
+        const cssId = instanceNumber ? `sleak-css-${instanceNumber}` : "sleak-css";
+        var link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.type = "text/css";
+        link.href = url;
+        link.id = cssId;
+        document.head.appendChild(link);
+      }
     }
     appendStylesheet(sleakCss);
 
@@ -50,8 +61,13 @@
     function appendSleakHtmlToBody(sleak_html) {
       const sleakHtml = document.createElement("div");
       sleakHtml.innerHTML = sleak_html;
-      sleakHtml.id = "sleak-html";
-      if (placement === "fullwidth") {
+      // Create unique container ID per instance
+      sleakHtml.id = instanceNumber ? `sleak-html-${instanceNumber}` : "sleak-html";
+      // Store instance number as data attribute for scoping queries
+      if (instanceNumber) {
+        sleakHtml.setAttribute("data-slk-instance", instanceNumber);
+      }
+      if (currentPlacement === "fullwidth") {
         sleakHtml.style.width = "100%";
         sleakHtml.style.height = "100%";
         if (instanceNumber) {
@@ -86,7 +102,7 @@
     setTimeout(function () {
       fetchAndAppendHtml()
         .then(() => {
-          executeSleakbotJs(chatbotId, instanceNumber);
+          executeSleakbotJs(chatbotId, instanceNumber, currentPlacement);
           // console.log('sleak.chat initialized');
         })
         .catch((error) => {
@@ -113,17 +129,33 @@
       instances.forEach((instance) => {
         const instanceNumber = instance.getAttribute("slk-instance");
         const chatbotId = instance.getAttribute("chatbot-id");
-        const dev = JSON.parse(instance.getAttribute("dev"));
-        injectSleakScript(chatbotId, instanceNumber, dev);
+        const instancePlacement = instance.getAttribute("placement");
+        const devAttr = instance.getAttribute("dev");
+        const dev = devAttr ? JSON.parse(devAttr) : null;
+        injectSleakScript(chatbotId, instanceNumber, dev, instancePlacement);
       });
     });
   } else {
     const chatbotId = sleakbotScriptTag.getAttribute("chatbot-id");
-    const dev = JSON.parse(sleakbotScriptTag.getAttribute("dev"));
-    injectSleakScript(chatbotId, null, dev);
+    const devAttr = sleakbotScriptTag.getAttribute("dev");
+    const dev = devAttr ? JSON.parse(devAttr) : null;
+    injectSleakScript(chatbotId, null, dev, placement);
   }
 
-  async function executeSleakbotJs(chatbotId, instanceNumber = null) {
+  async function executeSleakbotJs(chatbotId, instanceNumber = null, currentPlacement = null) {
+    // Use currentPlacement if provided and not empty, otherwise fall back to the placement from #sleakbot tag
+    const placementToUse = (currentPlacement !== null && currentPlacement !== "") ? currentPlacement : placement;
+    
+    // Get the container element for this specific instance to scope all queries
+    let instanceContainer = null;
+    if (instanceNumber) {
+      instanceContainer = document.querySelector(`[data-slk-instance='${instanceNumber}']`);
+    } else {
+      instanceContainer = document.getElementById("sleak-html");
+    }
+    // Fallback to document if container not found (for backward compatibility)
+    const queryScope = instanceContainer || document;
+    
     let chatId;
     let visitorId;
 
@@ -306,60 +338,52 @@
           `/${chatbotId}?visitor_id=${visitorId}&chat_id=${chatId}`;
       };
 
-      if (placement == "fullwidth") {
-        if (instanceNumber) {
-          var slkInstance = document.querySelector(
-            `[slk-instance='${instanceNumber}']`
-          );
-          iframeWidgetbody = slkInstance.nextSibling.querySelector(
-            "#sleak-widget-iframe"
-          );
-        } else {
-          iframeWidgetbody = document.querySelector("#sleak-widget-iframe");
-        }
+      if (placementToUse == "fullwidth") {
+        iframeWidgetbody = queryScope.querySelector("#sleak-widget-iframe");
         iframeWidgetbody.src =
           widgetBaseUrl +
           `/${chatbotId}?visitor_id=${visitorId}&chat_id=${chatId}&placement=fullwidth`;
       } else {
-        iframeWidgetbody = document.getElementById("sleak-widget-iframe");
-        const sleakWrap = document.querySelector("#sleak-widgetwrap");
-        const sleakButton = document.querySelector("#sleak-buttonwrap");
-        var sleakPopup = document.querySelector("#sleak-popup-embed");
-        const sleakEmbeddedWidget = document.querySelector("#sleak-body-embed");
-        const sleakWidgetwrap = document.getElementById(
-          "sleak-widget-container"
+        iframeWidgetbody = queryScope.querySelector("#sleak-widget-iframe");
+
+        const sleakWrap = queryScope.querySelector("#sleak-widgetwrap");
+        const sleakButton = queryScope.querySelector("#sleak-buttonwrap");
+        var sleakPopup = queryScope.querySelector("#sleak-popup-embed");
+        const sleakEmbeddedWidget = queryScope.querySelector("#sleak-body-embed");
+        const sleakWidgetwrap = queryScope.querySelector(
+          "#sleak-widget-container"
         );
-        const popupListContainer = document.getElementById("popup-list-container");
-        const liveChatPopup = document.getElementById(
-          "sleak-operatorchanged-popup"
+        const popupListContainer = queryScope.querySelector("#popup-list-container");
+        const liveChatPopup = queryScope.querySelector(
+          "#sleak-operatorchanged-popup"
         );
-        const chatInput = document.querySelector(
+        const chatInput = queryScope.querySelector(
           ".sleak-popup-chatinpupt-input-wrapper"
         );
-        const btnPulse = document.querySelector("#sleak-button-pulse");
-        const isTypingIndicator = document.querySelector(
+        const btnPulse = queryScope.querySelector("#sleak-button-pulse");
+        const isTypingIndicator = queryScope.querySelector(
           "#sleak-loader-container"
         );
-        const popupListWrap = document.querySelector("#popup-list-wrap");
-        var sleakBtnContainer = document.querySelector("#sleak-btn-container");
-        const sleakWidgetClosedBtn = document.querySelector(
+        const popupListWrap = queryScope.querySelector("#popup-list-wrap");
+        var sleakBtnContainer = queryScope.querySelector("#sleak-btn-container");
+        const sleakWidgetClosedBtn = queryScope.querySelector(
           "#sleak-widget-closed"
         );
         const sleakWidgetOpenedBtn =
-          document.querySelector("#sleak-widget-open");
-        const sleakWidgetLoader = document.querySelector(
+          queryScope.querySelector("#sleak-widget-open");
+        const sleakWidgetLoader = queryScope.querySelector(
           "#sleak-button-spinner"
         );
-        const slkPopupAvatar = document.querySelector(
+        const slkPopupAvatar = queryScope.querySelector(
           "#sleak-popup-embed-avatar"
         );
-        const slkPopupAgentName = document.querySelector(
+        const slkPopupAgentName = queryScope.querySelector(
           "#sleak-popup-embed-agentname"
         );
-        const slkPopupBodyMessage = document.querySelector(
+        const slkPopupBodyMessage = queryScope.querySelector(
           "#sleak-popup-embed-body"
         );
-        const sleakMobileHandle = document.querySelector(
+        const sleakMobileHandle = queryScope.querySelector(
           "#sleak-mobile-handle"
         );
 
@@ -702,13 +726,13 @@
         };
 
         (async function btnClickEventHandling() {
-          document.querySelectorAll("[open-widget]").forEach((btn) => {
+          queryScope.querySelectorAll("[open-widget]").forEach((btn) => {
             btn.addEventListener("click", function () {
               window.toggleSleakWidget();
             });
           });
 
-          document
+          queryScope
             .querySelector("[close-popup]")
             .addEventListener("click", function (event) {
               event.stopPropagation();
@@ -721,10 +745,13 @@
           window.addEventListener("scroll", function () {
             if (window.sleakWidgetOpenState == true) {
               const viewportHeightScroll = window.innerHeight;
-              document.getElementById("sleak-widgetwrap").style.height =
-                viewportHeightScroll + "px";
-              document.getElementById("sleak-widgetwrap").style.minHeight =
-                viewportHeightScroll + "px";
+              const widgetWrap = queryScope.querySelector("#sleak-widgetwrap");
+              if (widgetWrap) {
+                widgetWrap.style.height =
+                  viewportHeightScroll + "px";
+                widgetWrap.style.minHeight =
+                  viewportHeightScroll + "px";
+              }
             }
           });
         }
@@ -864,7 +891,7 @@
               window.toggleSleakWidget();
             }
           };
-          document.querySelectorAll("[slk-prefill-form]").forEach((form) => {
+          queryScope.querySelectorAll("[slk-prefill-form]").forEach((form) => {
             form.addEventListener("submit", async function (e) {
               e.preventDefault();
               if (!slkBodyRendered) {
@@ -999,7 +1026,7 @@
         // console.log('Pushed to dataLayer:', event);
       }
 
-      if (slkInstance) return;
+      // if (slkInstance) return;
 
       window.addEventListener("message", (event) => {
         if (
