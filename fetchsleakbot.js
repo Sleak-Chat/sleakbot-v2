@@ -4,13 +4,23 @@
   } else {
     return;
   }
+  
+  const sleakbotScriptTag = document.querySelector("#sleakbot");
+  const scriptCookies = sleakbotScriptTag.getAttribute("cookies");
+  const scriptSrc = sleakbotScriptTag.getAttribute("src");
+  const placement = sleakbotScriptTag.getAttribute("placement");
+  let baseUrl;
+  let widgetBaseUrl;
+
+  const isInstance = sleakbotScriptTag.getAttribute("slk-instance");
+  let instances = null;
 
   async function injectSleakScript(chatbotId, instanceNumber = null, dev) {
     // env control
-    if (scriptSrc.includes("127.0.0.1:")) {
-      baseUrl = "http://127.0.0.1:5501";
-      widgetBaseUrl = "http://localhost:3000";
-      // widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
+    if (scriptSrc.includes("localhost")) {
+      baseUrl = "http://localhost:8001";
+      // widgetBaseUrl = "http://localhost:3000";
+      widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
     } else if (dev === true) {
       baseUrl = "https://sleak-chat.github.io/sleakbot-v2";
       widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
@@ -85,18 +95,6 @@
     }, 10);
   }
 
-  const sleakbotScriptTag = document.querySelector("#sleakbot");
-
-  const scriptCookies = sleakbotScriptTag.getAttribute("cookies");
-  const scriptSrc = sleakbotScriptTag.getAttribute("src");
-  const placement = sleakbotScriptTag.getAttribute("placement");
-  // console.log('placement =', placement);
-  let baseUrl;
-  let widgetBaseUrl;
-
-  const isInstance = sleakbotScriptTag.getAttribute("slk-instance");
-  let instances = null;
-
   function domReady() {
     return new Promise((resolve) => {
       if (document.readyState === "loading") {
@@ -110,7 +108,7 @@
   if (isInstance) {
     domReady().then(() => {
       instances = document.querySelectorAll(`[slk-instance]`);
-      console.log("instances =", instances);
+      // console.log("instances =", instances);
 
       instances.forEach((instance) => {
         const instanceNumber = instance.getAttribute("slk-instance");
@@ -382,12 +380,12 @@
           Object.assign(popupListWrap.style, {
             right: `${chatbotConfig.btn_offset.x_mobile}px`,
             left: `unset`,
-            bottom: `${chatbotConfig.btn_offset.y_mobile + 82}px`,
+            bottom: `${chatbotConfig.btn_offset.y_mobile + 64}px`,
           });
         }
 
         function setStylingDesktop() {
-          Object.assign(sleakButton.style, {
+          Object.assign(sleakButton?.style, {
             right: `${chatbotConfig.btn_offset.x_desktop}px`,
             bottom: `${chatbotConfig.btn_offset.y_desktop}px`,
           });
@@ -395,7 +393,7 @@
           Object.assign(popupListWrap.style, {
             right: `${chatbotConfig.btn_offset.x_desktop}px`,
             left: `unset`,
-            bottom: `${chatbotConfig.btn_offset.y_desktop + 82}px`,
+            bottom: `${chatbotConfig.btn_offset.y_desktop + 80}px`,
           });
 
           sleakWidgetwrap.style.right = `${chatbotConfig.btn_offset.x_desktop}px`;
@@ -414,7 +412,7 @@
           Object.assign(popupListWrap.style, {
             left: `${chatbotConfig.btn_offset.x_mobile}px`,
             right: `unset`,
-            bottom: `${chatbotConfig.btn_offset.y_mobile + 82}px`,
+            bottom: `${chatbotConfig.btn_offset.y_mobile + 80}px`,
           });
           popupListWrap.style.alignItems = "start";
           sleakWrap.style.alignItems = "flex-start";
@@ -436,7 +434,7 @@
           Object.assign(popupListWrap.style, {
             left: `${chatbotConfig.btn_offset.x_desktop}px`,
             right: `unset`,
-            bottom: `${chatbotConfig.btn_offset.y_desktop + 82}px`,
+            bottom: `${chatbotConfig.btn_offset.y_desktop + 80}px`,
           });
 
           Object.assign(sleakButton.style, {
@@ -553,6 +551,7 @@
           sleakWidgetwrap.style.transform = `unset`;
 
           sleakEmbeddedWidget.style.display = "flex";
+          iframeWidgetbody.style.pointerEvents = "auto";
           sleakPopup.style.display = "none";
 
           // triggerbased
@@ -579,6 +578,7 @@
         window.closeSleakWidget = function () {
           sleakEmbeddedWidget.classList.remove("open");
           iframeWidgetbody.classList.remove("open");
+          iframeWidgetbody.style.pointerEvents = "";
           sleakEmbeddedWidget.style.opacity = "0";
           sleakEmbeddedWidget.style.transform = "translateY(12px)";
 

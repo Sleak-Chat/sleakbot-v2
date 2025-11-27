@@ -1,85 +1,79 @@
 <div id="sleak-container">
-  <div>
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1"
-    /> 
-  </div>
-  <div>
-    <div id="sleak-widgetwrap">
-      <div id="sleak-widget-container">
-        <div id="sleak-body-embed" class="sleak-embed">
-          <div id="sleak-mobile-handle"></div>
-          <iframe
-            id="sleak-widget-iframe"
-            frameborder="0"
-            scrolling="no"
-            src=""
-            height="100%"
-            width="100%"
-            allowtransparency="true"
-            referrerpolicy="no-referrer"
-            allow="clipboard-read; clipboard-write"
-          ></iframe>
-        </div>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1"
+  /> 
+  <div id="sleak-widgetwrap">
+    <div id="sleak-widget-container">
+      <div id="sleak-body-embed" class="sleak-embed">
+        <div id="sleak-mobile-handle"></div>
+        <iframe
+          id="sleak-widget-iframe"
+          frameborder="0"
+          scrolling="no"
+          src=""
+          height="100%"
+          width="100%"
+          allowtransparency="true"
+          referrerpolicy="no-referrer"
+          allow="clipboard-read; clipboard-write"
+        ></iframe>
       </div>
-      <div id="popup-list-wrap">
-        <div id="popup-list-container">
-          <div id="sleak-loader-container"> 
-            <svg height="40" width="40" class="sleak-loader">
-            <circle class="sleak-loading-dot" cx="10" cy="20" r="3" />
-            <circle class="sleak-loading-dot" cx="20" cy="20" r="3" />
-            <circle class="sleak-loading-dot" cx="30" cy="20" r="3" />
-            </svg>
-          </div>
-          <div id="sleak-operatorchanged-popup" open-widget >
-            <img src="https://cdn.sleak.chat/assets/sleak_close_btn.svg" id="sleak-operatorchanged-avatar" class="sleak-popup-embed-avatar" alt="Close button"/>
-            <div id="sleak-operatorchanged-text">
-              <strong color="#333" id="sleak-operatorchanged-name">Sjef</strong> heeft de chat overgenomen
-            </div>
-          </div>
-          </svg>
-          
-          <div class="sleak-popup-embed"  id="sleak-popup-embed" open-widget>
-            <div class="sleak-popup-embed-container">
-              <div class="sleak-popup-embed-headercontainer">
-                <div class="sleak-popup-embed-header">
-                  <img src="https://cdn.sleak.chat/assets/sleak_defauld_avatar-min.png" class="sleak-popup-embed-avatar" id="sleak-popup-embed-avatar" alt="Agent avatar"/>
-                  <div class="sleak-popup-embed-headerwrap">
-                    <span class="sleak-popup-embed-agentname" id="sleak-popup-embed-agentname"></span>
-                  </div>
-                </div>
-                <div class="sleak-popup-embed-closebtn" close-popup>
-                  <img class="sleak-popup-embed-closebtn-icon" src="https://cdn.sleak.chat/assets/sleak_close_btn.svg" id="sleak-popup-embed-closebtn-icon" alt="Close chat" />
-                </div>
-              </div>
-              <div class="sleak-popup-embed-body" id="sleak-popup-embed-body"></div>
-            </div>
-          </div>
-          <div class="sleak-popup-chatinpupt-input-wrapper">
-            <textarea id="sleak-popup-chatinpupt-widget-textarea" rows="1" placeholder="Typ hier je bericht..." dir="auto" cols="20" autocomplete="off" tab="0" open-widget></textarea>
-            <div id="sleak-popup-chatinpupt-send-button-wrap">
-              <button id="sleak-popup-chatinpupt-submit-message-form-button"></button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div id="sleak-buttonwrap" open-widget>
-        <div id="sleak-button-pulse"></div>
-        <div id="sleak-btn-notification-count">1</div>
-        <div id="sleak-buttonwrapper">
-          <div id="sleak-buttonshadow"></div>
-          <div class="sleak-btn-container" id="sleak-btn-container" >
-            <div id="sleak-btn-openclosed">
-              <img src="https://sleak-chat.github.io/sleakbot-v2/assets/sleak_btnicon_open.png" id="sleak-widget-open" alt="Open chat">
-              <img src="https://sleak-chat.github.io/sleakbot-v2/assets/sleak_btnicon_closed_default.png" id="sleak-widget-closed" alt="Chat button">
-              <img src="https://sleak-chat.github.io/sleakbot-v2/assets/sleak_spinner.png" id="sleak-button-spinner" alt="Loading"/>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="sleak-bgoverlay"></div>
     </div>
+    <div id="popup-list-wrap">
+      <div id="popup-list-container">
+        <div id="sleak-loader-container"> 
+          <svg height="40" width="40" class="sleak-loader">
+          <circle class="sleak-loading-dot" cx="10" cy="20" r="3" />
+          <circle class="sleak-loading-dot" cx="20" cy="20" r="3" />
+          <circle class="sleak-loading-dot" cx="30" cy="20" r="3" />
+          </svg>
+        </div>
+        <div id="sleak-operatorchanged-popup" open-widget >
+          <img src="https://cdn.sleak.chat/assets/sleak_close_btn.svg" id="sleak-operatorchanged-avatar" class="sleak-popup-embed-avatar" alt="Close button"/>
+          <div id="sleak-operatorchanged-text">
+            <strong color="#333" id="sleak-operatorchanged-name">Sjef</strong> heeft de chat overgenomen
+          </div>
+        </div>
+        </svg>
+        
+        <div class="sleak-popup-embed"  id="sleak-popup-embed" open-widget>
+          <div class="sleak-popup-embed-container">
+            <div class="sleak-popup-embed-headercontainer">
+              <div class="sleak-popup-embed-header">
+                <img src="https://cdn.sleak.chat/assets/sleak_defauld_avatar-min.png" class="sleak-popup-embed-avatar" id="sleak-popup-embed-avatar" alt="Agent avatar"/>
+                <p class="sleak-popup-embed-agentname" id="sleak-popup-embed-agentname"></p>
+              </div>
+              <div class="sleak-popup-embed-closebtn" close-popup>
+                <img class="sleak-popup-embed-closebtn-icon" src="https://cdn.sleak.chat/assets/sleak_close_btn.svg" id="sleak-popup-embed-closebtn-icon" alt="Close chat" />
+              </div>
+            </div>
+            <div class="sleak-popup-embed-body" id="sleak-popup-embed-body"></div>
+          </div>
+        </div>
+        <div class="sleak-popup-chatinpupt-input-wrapper">
+          <textarea id="sleak-popup-chatinpupt-widget-textarea" rows="1" placeholder="Typ hier je bericht..." dir="auto" cols="20" autocomplete="off" tab="0" open-widget></textarea>
+          <div id="sleak-popup-chatinpupt-send-button-wrap">
+            <button id="sleak-popup-chatinpupt-submit-message-form-button"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="sleak-buttonwrap" open-widget>
+      <div id="sleak-button-pulse"></div>
+      <div id="sleak-btn-notification-count">1</div>
+      <div id="sleak-buttonwrapper">
+        <div id="sleak-buttonshadow"></div>
+        <div class="sleak-btn-container" id="sleak-btn-container" >
+          <div id="sleak-btn-openclosed">
+            <img src="https://sleak-chat.github.io/sleakbot-v2/assets/sleak_btnicon_open.png" id="sleak-widget-open" alt="Open chat">
+            <img src="https://sleak-chat.github.io/sleakbot-v2/assets/sleak_btnicon_closed_default.png" id="sleak-widget-closed" alt="Chat button">
+            <img src="https://sleak-chat.github.io/sleakbot-v2/assets/sleak_spinner.png" id="sleak-button-spinner" alt="Loading"/>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="sleak-bgoverlay"></div>
   </div>
 </div>

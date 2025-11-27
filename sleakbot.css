@@ -38,6 +38,7 @@
   justify-content: flex-end;
   transition: all .4s cubic-bezier(.4, 0, .2, 1);
   min-height: 500px;
+  box-sizing: border-box;
 }
 
 #sleak-body-embed {
@@ -59,6 +60,7 @@
   transition: all .4s cubic-bezier(.4, 0, .2, 1), border .0s ease-in, border-radius .0s ease-in;
   pointer-events: none;
   position: relative;
+  box-sizing: border-box;
 }
 
 #sleak-body-embed.open {
@@ -85,14 +87,14 @@
 #sleak-widget-iframe {
   background-color: #fff;
   display: block;
-  pointer-events: auto !important;
+  pointer-events: none;
   z-index: 1 !important;
   overflow: hidden;
   min-width: 0;
   border: none;
   box-sizing: border-box;
-  width: 100%;
   height: 100%;
+  transform: translateZ(0) !important;
 }
 
 #popup-list-wrap {
@@ -195,10 +197,10 @@
   pointer-events: auto;
   cursor: pointer;
   height: auto;
-  width: 300px;
+  width: 100%;
+  max-width: 300px;
   border: 1px solid #f5f5f5;
   background-color: #fff;
-  height: auto;
   align-items: flex-end;
   align-content: flex-end;
   border-radius: 20px;
@@ -227,6 +229,7 @@
   justify-content: start;
   gap: 6px;
   height: max-content;
+  width: calc(100% - 24px);
 }
 
 .sleak-popup-embed-headerwrap {
@@ -247,7 +250,7 @@
   line-height: 16px;
   color: #757575;
   font-weight: 500;
-  max-width: 120px;
+  max-width: 200px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -287,7 +290,6 @@
   -webkit-line-clamp: 2;
 }
 
-/* .sleak-popup-embed-statuswrap */
 .sleak-popup-embed-statuswrap {
   display: flex;
   gap: 6px;
@@ -388,7 +390,6 @@
   border-radius: 8px;
 }
 
-/* #sleak-buttonwrap */
 #sleak-buttonwrap {
   pointer-events: auto;
   z-index: 9999999999999999;
@@ -616,6 +617,7 @@
     inset: 0 !important;
     width: 100% !important;
     height: max-content !important;
+    transition: unset;
   }
 
   #sleak-widgetwrap {
@@ -685,6 +687,21 @@
   #sleak-buttonwrap {
     z-index: 0;
     inset: unset;
+    width: 64px;
+    height: 64px;
+  }
+
+  #sleak-buttonwrapper, #sleak-buttonshadow, #sleak-btn-openclosed {
+    height: 52px;
+    width: 52px;
+  }
+
+  #sleak-btn-openclosed img {
+    width: 26px;
+  }
+
+  .sleak-popup-embed-container{
+    padding: 12px 14px;
   }
 
   #sleak-body-embed:focus {
