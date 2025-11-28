@@ -304,11 +304,11 @@
       chatbotConfig?.publishing?.published == true
     ) {
       let sleakChime = new Audio(
-        "https://cdn.sleak.chat/assets/sleak-chime.mp3"
+        `${baseUrl}/assets/sleak-chime.mp3`
       );
       sleakChime.preload = "auto";
       let sleakChimeOperator = new Audio(
-        "https://cdn.sleak.chat/assets/sleak-chime-operatorjoined.mp3"
+        `${baseUrl}/assets/sleak-chime-operatorjoined.mp3`
       );
       sleakChimeOperator.preload = "auto";
       let userHasInteracted = false;
@@ -325,7 +325,7 @@
       );
 
       function playAudio(audio) {
-        console.log("playing audio:", audio);
+        console.log("playing audio:", audio, "URL:", audio.src);
         // Reset audio to beginning if it was previously played
         audio.currentTime = 0;
         // Ensure audio is loaded
@@ -334,10 +334,15 @@
           audio.play().catch((error) => {
             // Silently handle autoplay restrictions - this is expected behavior
             if (error.name !== "NotAllowedError") {
-              console.error("Error playing audio:", error);
+              console.error("Error playing audio:", error, "Audio URL:", audio.src);
             }
           });
         } else {
+          // Add error handler for loading failures
+          audio.addEventListener("error", function onError(e) {
+            console.error("Error loading audio file:", audio.src, e);
+          }, { once: true });
+          
           // Wait for audio to load, then play
           audio.addEventListener(
             "canplaythrough",
@@ -345,7 +350,7 @@
               audio.removeEventListener("canplaythrough", playWhenReady);
               audio.play().catch((error) => {
                 if (error.name !== "NotAllowedError") {
-                  console.error("Error playing audio:", error);
+                  console.error("Error playing audio:", error, "Audio URL:", audio.src);
                 }
               });
             },
