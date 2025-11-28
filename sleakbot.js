@@ -75,7 +75,7 @@ async function sleakScript() {
     const sleakEmbeddedWidget = document.querySelector('#sleak-body-embed');
     const sleakWidgetwrap = document.getElementById('sleak-widget-container');
     const liveChatPopup = document.getElementById('sleak-operatorchanged-popup');
-    const chatInput = document.querySelector('.sleak-popup-chatinpupt-input-wrapper');
+    const chatInput = document.querySelector('.sleak-popup-chatinput-input-wrapper');
     const btnPulse = document.querySelector('#sleak-button-pulse');
     const btnNotificaiton = document.querySelector('#sleak-btn-notification-count');
     const isTypingIndicator = document.querySelector('#sleak-loader-container');

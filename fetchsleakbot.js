@@ -4,7 +4,7 @@
   } else {
     return;
   }
-  
+
   const sleakbotScriptTag = document.querySelector("#sleakbot");
   const scriptCookies = sleakbotScriptTag.getAttribute("cookies");
   const scriptSrc = sleakbotScriptTag.getAttribute("src");
@@ -15,14 +15,22 @@
   const isInstance = sleakbotScriptTag.getAttribute("slk-instance");
   let instances = null;
 
-  async function injectSleakScript(chatbotId, instanceNumber = null, dev, instancePlacement = null) {
+  async function injectSleakScript(
+    chatbotId,
+    instanceNumber = null,
+    dev,
+    instancePlacement = null
+  ) {
     // Use instancePlacement if provided and not empty, otherwise fall back to the placement from #sleakbot tag
-    const currentPlacement = (instancePlacement !== null && instancePlacement !== "") ? instancePlacement : placement;
+    const currentPlacement =
+      instancePlacement !== null && instancePlacement !== ""
+        ? instancePlacement
+        : placement;
     // env control
     if (scriptSrc.includes("localhost")) {
       baseUrl = "http://localhost:8001";
-      // widgetBaseUrl = "http://localhost:3000";
-      widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
+      widgetBaseUrl = "http://localhost:3000";
+      // widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
     } else if (dev === true) {
       baseUrl = "https://sleak-chat.github.io/sleakbot-v2";
       widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
@@ -33,20 +41,27 @@
       baseUrl = "https://sleak-chat.github.io/sleakbot-v2";
       widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
     }
-    const fileName = currentPlacement === "fullwidth" ? "sleakbot-fw" : "sleakbot";
+    const fileName =
+      currentPlacement === "fullwidth"
+        ? "sleakbot-fw"
+        : currentPlacement === "popover"
+        ? "sleakbot-po"
+        : "sleakbot";
 
     const sleakHtml = `${baseUrl}/${fileName}.html`;
     const sleakCss = `${baseUrl}/${fileName}.css`;
 
     async function appendStylesheet(url) {
       // Check if this exact stylesheet URL is already loaded to avoid duplicates
-      const existingLink = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).find(
-        link => link.href === url || link.getAttribute('href') === url
-      );
-      
+      const existingLink = Array.from(
+        document.querySelectorAll('link[rel="stylesheet"]')
+      ).find((link) => link.href === url || link.getAttribute("href") === url);
+
       if (!existingLink) {
         // Create unique CSS link ID per instance
-        const cssId = instanceNumber ? `sleak-css-${instanceNumber}` : "sleak-css";
+        const cssId = instanceNumber
+          ? `sleak-css-${instanceNumber}`
+          : "sleak-css";
         var link = document.createElement("link");
         link.rel = "stylesheet";
         link.type = "text/css";
@@ -62,7 +77,9 @@
       const sleakHtml = document.createElement("div");
       sleakHtml.innerHTML = sleak_html;
       // Create unique container ID per instance
-      sleakHtml.id = instanceNumber ? `sleak-html-${instanceNumber}` : "sleak-html";
+      sleakHtml.id = instanceNumber
+        ? `sleak-html-${instanceNumber}`
+        : "sleak-html";
       // Store instance number as data attribute for scoping queries
       if (instanceNumber) {
         sleakHtml.setAttribute("data-slk-instance", instanceNumber);
@@ -84,6 +101,8 @@
             sleakbotScriptTag.nextSibling
           );
         }
+      } else if (currentPlacement === "popover") {
+        document.body.appendChild(sleakHtml);
       } else {
         document.body.appendChild(sleakHtml);
       }
@@ -142,20 +161,29 @@
     injectSleakScript(chatbotId, null, dev, placement);
   }
 
-  async function executeSleakbotJs(chatbotId, instanceNumber = null, currentPlacement = null) {
+  async function executeSleakbotJs(
+    chatbotId,
+    instanceNumber = null,
+    currentPlacement = null
+  ) {
     // Use currentPlacement if provided and not empty, otherwise fall back to the placement from #sleakbot tag
-    const placementToUse = (currentPlacement !== null && currentPlacement !== "") ? currentPlacement : placement;
-    
+    const placementToUse =
+      currentPlacement !== null && currentPlacement !== ""
+        ? currentPlacement
+        : placement;
+
     // Get the container element for this specific instance to scope all queries
     let instanceContainer = null;
     if (instanceNumber) {
-      instanceContainer = document.querySelector(`[data-slk-instance='${instanceNumber}']`);
+      instanceContainer = document.querySelector(
+        `[data-slk-instance='${instanceNumber}']`
+      );
     } else {
       instanceContainer = document.getElementById("sleak-html");
     }
     // Fallback to document if container not found (for backward compatibility)
     const queryScope = instanceContainer || document;
-    
+
     let chatId;
     let visitorId;
 
@@ -291,7 +319,13 @@
         once: true,
       });
 
+      document.documentElement.style.setProperty(
+        "--primary-color",
+        `${chatbotConfig.primary_color}`
+      );
+
       function playAudio(audio) {
+        console.log("playing audio:", audio);
         // Reset audio to beginning if it was previously played
         audio.currentTime = 0;
         // Ensure audio is loaded
@@ -344,28 +378,41 @@
           widgetBaseUrl +
           `/${chatbotId}?visitor_id=${visitorId}&chat_id=${chatId}&placement=fullwidth`;
       } else {
+        // Handle both default and popover placements with shared logic
+        const isPopover = placementToUse === "popover";
+
         iframeWidgetbody = queryScope.querySelector("#sleak-widget-iframe");
+        iframeWidgetbody.src =
+          widgetBaseUrl +
+          `/${chatbotId}?visitor_id=${visitorId}&chat_id=${chatId}${
+            isPopover ? `&placement=popover` : ``
+          }`;
 
         const sleakWrap = queryScope.querySelector("#sleak-widgetwrap");
         const sleakButton = queryScope.querySelector("#sleak-buttonwrap");
         var sleakPopup = queryScope.querySelector("#sleak-popup-embed");
-        const sleakEmbeddedWidget = queryScope.querySelector("#sleak-body-embed");
+        const sleakEmbeddedWidget =
+          queryScope.querySelector("#sleak-body-embed");
         const sleakWidgetwrap = queryScope.querySelector(
           "#sleak-widget-container"
         );
-        const popupListContainer = queryScope.querySelector("#popup-list-container");
+        const popupListContainer = queryScope.querySelector(
+          "#popup-list-container"
+        );
         const liveChatPopup = queryScope.querySelector(
           "#sleak-operatorchanged-popup"
         );
         const chatInput = queryScope.querySelector(
-          ".sleak-popup-chatinpupt-input-wrapper"
+          ".sleak-popup-chatinput-input-wrapper"
         );
         const btnPulse = queryScope.querySelector("#sleak-button-pulse");
         const isTypingIndicator = queryScope.querySelector(
           "#sleak-loader-container"
         );
         const popupListWrap = queryScope.querySelector("#popup-list-wrap");
-        var sleakBtnContainer = queryScope.querySelector("#sleak-btn-container");
+        var sleakBtnContainer = queryScope.querySelector(
+          "#sleak-btn-container"
+        );
         const sleakWidgetClosedBtn = queryScope.querySelector(
           "#sleak-widget-closed"
         );
@@ -395,80 +442,154 @@
         var viewportWidth2 = window.innerWidth;
 
         function setStylingMobile() {
-          Object.assign(sleakButton.style, {
-            left: `unset`,
-            right: `${chatbotConfig.btn_offset.x_mobile}px`,
-            bottom: `${chatbotConfig.btn_offset.y_mobile}px`,
-          });
+          if (isPopover && chatInput) {
+            Object.assign(chatInput.style, {
+              bottom: `${chatbotConfig.btn_offset.y_mobile}px`,
+            });
 
-          Object.assign(popupListWrap.style, {
-            right: `${chatbotConfig.btn_offset.x_mobile}px`,
-            left: `unset`,
-            bottom: `${chatbotConfig.btn_offset.y_mobile + 64}px`,
-          });
+            if (popupListWrap) {
+              Object.assign(popupListWrap.style, {
+                bottom: `${chatbotConfig.btn_offset.y_mobile + 64}px`,
+              });
+            }
+          } else {
+            if (sleakButton) {
+              Object.assign(sleakButton.style, {
+                left: `unset`,
+                right: `${chatbotConfig.btn_offset.x_mobile}px`,
+                bottom: `${chatbotConfig.btn_offset.y_mobile}px`,
+              });
+            }
+
+            if (popupListWrap) {
+              Object.assign(popupListWrap.style, {
+                right: `${chatbotConfig.btn_offset.x_mobile}px`,
+                left: `unset`,
+                bottom: `${chatbotConfig.btn_offset.y_mobile + 64}px`,
+              });
+            }
+          }
         }
 
         function setStylingDesktop() {
-          Object.assign(sleakButton?.style, {
-            right: `${chatbotConfig.btn_offset.x_desktop}px`,
-            bottom: `${chatbotConfig.btn_offset.y_desktop}px`,
-          });
+          if (isPopover && chatInput) {
+            Object.assign(chatInput.style, {
+              bottom: `${chatbotConfig.btn_offset.y_desktop}px`,
+            });
 
-          Object.assign(popupListWrap.style, {
-            right: `${chatbotConfig.btn_offset.x_desktop}px`,
-            left: `unset`,
-            bottom: `${chatbotConfig.btn_offset.y_desktop + 80}px`,
-          });
+            if (popupListWrap) {
+              Object.assign(popupListWrap.style, {
+                bottom: `${chatbotConfig.btn_offset.y_desktop + 64}px`,
+              });
+            }
+          } else {
+            if (sleakButton) {
+              Object.assign(sleakButton.style, {
+                right: `${chatbotConfig.btn_offset.x_desktop}px`,
+                bottom: `${chatbotConfig.btn_offset.y_desktop}px`,
+              });
+            }
 
-          sleakWidgetwrap.style.right = `${chatbotConfig.btn_offset.x_desktop}px`;
-          sleakWidgetwrap.style.bottom = `${chatbotConfig.btn_offset.y_desktop}px`;
-          sleakWidgetwrap.style.height = `calc(100% - 98px - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
-          sleakWidgetwrap.style.width = `calc(100% - (2 * ${chatbotConfig.btn_offset.x_desktop}px))`;
+            if (popupListWrap) {
+              Object.assign(popupListWrap.style, {
+                right: `${chatbotConfig.btn_offset.x_desktop}px`,
+                left: `unset`,
+                bottom: `${chatbotConfig.btn_offset.y_desktop + 80}px`,
+              });
+            }
+
+            if (sleakWidgetwrap) {
+              sleakWidgetwrap.style.right = `${chatbotConfig.btn_offset.x_desktop}px`;
+              sleakWidgetwrap.style.bottom = `${chatbotConfig.btn_offset.y_desktop}px`;
+              sleakWidgetwrap.style.height = `calc(100% - 98px - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
+              sleakWidgetwrap.style.width = `calc(100% - (2 * ${chatbotConfig.btn_offset.x_desktop}px))`;
+            }
+          }
         }
 
         function setStylingMobileMirrored() {
-          Object.assign(sleakButton.style, {
-            right: `unset`,
-            left: `${chatbotConfig.btn_offset.x_mobile}px`,
-            bottom: `${chatbotConfig.btn_offset.y_mobile}px`,
-          });
+          if (isPopover && chatInput) {
+            Object.assign(chatInput.style, {
+              bottom: `${chatbotConfig.btn_offset.y_mobile}px`,
+            });
 
-          Object.assign(popupListWrap.style, {
-            left: `${chatbotConfig.btn_offset.x_mobile}px`,
-            right: `unset`,
-            bottom: `${chatbotConfig.btn_offset.y_mobile + 80}px`,
-          });
-          popupListWrap.style.alignItems = "start";
-          sleakWrap.style.alignItems = "flex-start";
-          sleakWrap.style.setProperty(
-            "justify-content",
-            "flex-start",
-            "important"
-          );
+            if (popupListWrap) {
+              Object.assign(popupListWrap.style, {
+                bottom: `${chatbotConfig.btn_offset.y_mobile + 64}px`,
+              });
+            }
+          } else {
+            if (sleakButton) {
+              Object.assign(sleakButton.style, {
+                right: `unset`,
+                left: `${chatbotConfig.btn_offset.x_mobile}px`,
+                bottom: `${chatbotConfig.btn_offset.y_mobile}px`,
+              });
+            }
+
+            if (popupListWrap) {
+              Object.assign(popupListWrap.style, {
+                left: `${chatbotConfig.btn_offset.x_mobile}px`,
+                right: `unset`,
+                bottom: `${chatbotConfig.btn_offset.y_mobile + 80}px`,
+              });
+              popupListWrap.style.alignItems = "start";
+            }
+
+            if (sleakWrap) {
+              sleakWrap.style.alignItems = "flex-start";
+              sleakWrap.style.setProperty(
+                "justify-content",
+                "flex-start",
+                "important"
+              );
+            }
+          }
         }
 
         function setStylingDesktopMirrored() {
-          Object.assign(sleakWidgetwrap.style, {
-            justifyContent: "flex-start",
-            alignItems: "flex-start",
-            left: `${chatbotConfig.btn_offset.x_desktop}px`,
-            bottom: `${chatbotConfig.btn_offset.y_desktop}px`,
-          });
+          if (isPopover && chatInput) {
+            Object.assign(chatInput.style, {
+              bottom: `${chatbotConfig.btn_offset.y_desktop}px`,
+            });
 
-          Object.assign(popupListWrap.style, {
-            left: `${chatbotConfig.btn_offset.x_desktop}px`,
-            right: `unset`,
-            bottom: `${chatbotConfig.btn_offset.y_desktop + 80}px`,
-          });
+            if (popupListWrap) {
+              Object.assign(popupListWrap.style, {
+                bottom: `${chatbotConfig.btn_offset.y_desktop + 64}px`,
+              });
+            }
+          } else {
+            if (sleakWidgetwrap) {
+              Object.assign(sleakWidgetwrap.style, {
+                justifyContent: "flex-start",
+                alignItems: "flex-start",
+                left: `${chatbotConfig.btn_offset.x_desktop}px`,
+                bottom: `${chatbotConfig.btn_offset.y_desktop}px`,
+              });
+            }
 
-          Object.assign(sleakButton.style, {
-            right: "unset",
-            left: `${chatbotConfig.btn_offset.x_desktop}px`,
-            bottom: `${chatbotConfig.btn_offset.y_desktop}px`,
-          });
-          sleakButton.style.setProperty("transform", "scaleX(-1)", "important");
+            if (popupListWrap) {
+              Object.assign(popupListWrap.style, {
+                left: `${chatbotConfig.btn_offset.x_desktop}px`,
+                right: `unset`,
+                bottom: `${chatbotConfig.btn_offset.y_desktop + 80}px`,
+              });
+              popupListWrap.style.alignItems = "start";
+            }
 
-          document.querySelector("#popup-list-wrap").style.alignItems = "start";
+            if (sleakButton) {
+              Object.assign(sleakButton.style, {
+                right: "unset",
+                left: `${chatbotConfig.btn_offset.x_desktop}px`,
+                bottom: `${chatbotConfig.btn_offset.y_desktop}px`,
+              });
+              sleakButton.style.setProperty(
+                "transform",
+                "scaleX(-1)",
+                "important"
+              );
+            }
+          }
         }
 
         function applyResponsiveStyling() {
@@ -500,31 +621,50 @@
         // Apply styling on window resize
         window.addEventListener("resize", applyResponsiveStyling);
 
-        // btn
-        var btnColor = chatbotConfig.primary_color;
-        sleakBtnContainer.style.backgroundColor = btnColor;
-        if (chatbotConfig.background_image) {
-          sleakBtnContainer.style.backgroundImage = `url("${chatbotConfig.background_image}")`;
-          sleakWidgetOpenedBtn.remove();
-          sleakWidgetClosedBtn.remove();
-        }
+        // Button setup (only for non-popover)
+        if (!isPopover && sleakBtnContainer) {
+          var btnColor = chatbotConfig.primary_color;
+          sleakBtnContainer.style.backgroundColor = btnColor;
+          if (chatbotConfig.background_image) {
+            sleakBtnContainer.style.backgroundImage = `url("${chatbotConfig.background_image}")`;
+            if (sleakWidgetOpenedBtn) sleakWidgetOpenedBtn.remove();
+            if (sleakWidgetClosedBtn) sleakWidgetClosedBtn.remove();
+          }
 
-        function slkShowBtn() {
-          sleakButton.style.opacity = "0";
-          sleakButton.style.transform = "scale(0.8)";
-          setTimeout(function () {
-            sleakButton.style.opacity = "1";
-            sleakButton.style.transform = "scale(1)";
-          }, 500);
+          function slkShowBtn() {
+            if (sleakButton) {
+              sleakButton.style.display = "flex";
+              sleakButton.style.opacity = "0";
+              sleakButton.style.transform = "scale(0.8)";
+              setTimeout(function () {
+                sleakButton.style.opacity = "1";
+                sleakButton.style.transform = "scale(1)";
+              }, 500);
+            }
+          }
+          slkShowBtn();
+        } else if (isPopover && chatInput) {
+          // For popover, show the chat input instead
+          function slkShowInput() {
+            chatInput.style.display = "flex";
+            chatInput.style.opacity = "0";
+            chatInput.style.transform = "scale(0.8)";
+            setTimeout(function () {
+              chatInput.style.opacity = "1";
+              chatInput.style.transform = "scale(1)";
+            }, 500);
+          }
+          slkShowInput();
         }
-        slkShowBtn();
 
         let slkBodyRendered = false;
         function slkRenderWidgetBody(callback) {
           iframeWidgetbody.src =
             widgetBaseUrl +
-            `/${chatbotId}?visitor_id=${visitorId}&chat_id=${chatId}`;
-        
+            `/${chatbotId}?visitor_id=${visitorId}&chat_id=${chatId}${
+              isPopover ? `&placement=popover` : ``
+            }`;
+
           iframeWidgetbody.addEventListener(
             "load",
             () => callback && callback(),
@@ -547,7 +687,7 @@
             slkRenderWidgetBody();
             slkBodyRendered = true;
           }
-          if (window.innerWidth > 420) {
+          if (window.innerWidth > 480) {
             setTimeout(() => {
               if (window.sleakWidgetOpenState == false)
                 window.toggleSleakWidget();
@@ -556,35 +696,56 @@
         }
 
         window.populatePopup = function (avatar, name, message) {
-          slkPopupAvatar.src = avatar;
-          slkPopupAgentName.textContent = name;
-          slkPopupBodyMessage.textContent = message;
+          if (slkPopupAvatar && slkPopupAgentName && slkPopupBodyMessage) {
+            slkPopupAvatar.src = avatar;
+            slkPopupAgentName.textContent = name;
+            slkPopupBodyMessage.textContent = message;
+          }
         };
 
-        // Set initial popup content
-        window.populatePopup(
-          chatbotConfig.avatar_url,
-          chatbotConfig.name,
-          chatbotConfig.first_message
-        );
+        // Set initial popup content (only if popup elements exist)
+        if (slkPopupAvatar && slkPopupAgentName && slkPopupBodyMessage) {
+          window.populatePopup(
+            chatbotConfig.avatar_url,
+            chatbotConfig.name,
+            chatbotConfig.first_message
+          );
+        }
 
         function openSleakWidget() {
           // Reset drag state
           isDragging = false;
           dragDistance = 0;
-          sleakWidgetwrap.style.transform = `unset`;
+          if (sleakWidgetwrap) {
+            sleakWidgetwrap.style.transform = `unset`;
+          }
 
           sleakEmbeddedWidget.style.display = "flex";
           iframeWidgetbody.style.pointerEvents = "auto";
-          sleakPopup.style.display = "none";
 
-          // triggerbased
-          chatInput.style.display = "none";
-          liveChatPopup.style.display = "none";
-          btnPulse.style.display = "none";
-          isTypingIndicator.style.display = "none";
+          if (sleakPopup) sleakPopup.style.display = "none";
+
+          // Animate chatInput out for popover placement
+          if (chatInput) {
+            if (isPopover) {
+              chatInput.style.transition =
+                "opacity 0.3s ease, transform 0.3s ease";
+              chatInput.style.opacity = "0";
+              chatInput.style.transform = "scale(0.8)";
+              setTimeout(() => {
+                chatInput.style.display = "none";
+              }, 300);
+            } else {
+              chatInput.style.display = "none";
+            }
+          }
+
+          if (liveChatPopup) liveChatPopup.style.display = "none";
+          if (btnPulse) btnPulse.style.display = "none";
+          if (isTypingIndicator) isTypingIndicator.style.display = "none";
 
           // Animate in - start from hidden state
+          sleakEmbeddedWidget.style.display = "flex";
           sleakEmbeddedWidget.style.opacity = "0";
           sleakEmbeddedWidget.style.transform = "translateY(12px)";
 
@@ -606,29 +767,59 @@
           sleakEmbeddedWidget.style.opacity = "0";
           sleakEmbeddedWidget.style.transform = "translateY(12px)";
 
-          Object.assign(popupListContainer.style, {
-            transform: "translateY(12px)",
-            opacity: "0",
-          })
+          if (popupListContainer) {
+            Object.assign(popupListContainer.style, {
+              transform: "translateY(12px)",
+              opacity: "0",
+            });
 
-          // Wait for animation to complete before hiding
-          setTimeout(() => {
-            popupListContainer.style.display = "none";
-            sleakEmbeddedWidget.style.display = "none";
-          }, 400);
+            // Wait for animation to complete before hiding
+            setTimeout(() => {
+              popupListContainer.style.display = "none";
+              sleakEmbeddedWidget.style.display = "none";
+            }, 400);
+          }
 
-          if (window.sleakWidgetOpenState){
+          if (isPopover && chatInput){
+            // For popover, just hide the widget
+            setTimeout(() => {
+              sleakEmbeddedWidget.style.display = "none";
+              // Show the input again when widget closes with animation
+              if (chatInput && isPopover) {
+                chatInput.style.display = "flex";
+                chatInput.style.transition =
+                  "opacity 0.3s ease, transform 0.3s ease";
+                chatInput.style.opacity = "0";
+                chatInput.style.transform = "scale(0.8)";
+                // Force reflow
+                void chatInput.offsetWidth;
+                // Animate in
+                setTimeout(() => {
+                  chatInput.style.opacity = "1";
+                  chatInput.style.transform = "scale(1)";
+                }, 10);
+              } else if (chatInput) {
+                chatInput.style.display = "flex";
+              }
+            }, 300);
+          }
+
+          if (
+            window.sleakWidgetOpenState &&
+            sleakWidgetOpenedBtn &&
+            sleakWidgetClosedBtn
+          ) {
             sleakWidgetOpenedBtn.classList.add("image-hide");
             sleakWidgetOpenedBtn.style.animation = "none";
             void sleakWidgetOpenedBtn.offsetWidth;
             sleakWidgetOpenedBtn.style.animation = "";
-  
+
             // Wait for animation to complete, then hide
             setTimeout(() => {
               sleakWidgetOpenedBtn.style.display = "none";
               sleakWidgetOpenedBtn.classList.remove("image-hide");
             }, 300);
-  
+
             setTimeout(() => {
               // Show and animate closed button in
               sleakWidgetClosedBtn.style.display = "flex";
@@ -642,9 +833,13 @@
         };
 
         window.toggleFullScreen = async function (expanded = false) {
+          if (isPopover || !sleakButton) return; // Full screen not applicable for popover
+
           if (expanded === true) {
             sleakButton.classList.add("full-chat-widget");
-            sleakWidgetwrap.style.height = `calc(100% - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
+            if (sleakWidgetwrap) {
+              sleakWidgetwrap.style.height = `calc(100% - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
+            }
 
             sleakEmbeddedWidget.style.maxWidth = `720px`;
             sleakEmbeddedWidget.style.maxHeight = `calc(${document.body.clientHeight}px - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
@@ -652,7 +847,9 @@
 
             window.sleakWidgetFullScreen = true;
           } else {
-            sleakWidgetwrap.style.height = `calc(100% - 98px - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
+            if (sleakWidgetwrap) {
+              sleakWidgetwrap.style.height = `calc(100% - 98px - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
+            }
             sleakEmbeddedWidget.style.maxWidth = ``;
             sleakEmbeddedWidget.style.maxHeight = ``;
             sleakEmbeddedWidget.style.height = ``;
@@ -669,26 +866,28 @@
         window.toggleSleakWidget = async function () {
           // check if widget is open
           if (window.sleakWidgetOpenState == false) {
-            sleakWidgetClosedBtn.classList.add("image-hide");
-            sleakWidgetClosedBtn.style.animation = "none";
-            // Force reflow to restart animation
-            void sleakWidgetClosedBtn.offsetWidth;
-            sleakWidgetClosedBtn.style.animation = "";
+            if (sleakWidgetClosedBtn && sleakWidgetOpenedBtn) {
+              sleakWidgetClosedBtn.classList.add("image-hide");
+              sleakWidgetClosedBtn.style.animation = "none";
+              // Force reflow to restart animation
+              void sleakWidgetClosedBtn.offsetWidth;
+              sleakWidgetClosedBtn.style.animation = "";
 
-            // Wait for animation to complete, then hide
-            setTimeout(() => {
-              sleakWidgetClosedBtn.style.display = "none";
-              sleakWidgetClosedBtn.classList.remove("image-hide");
-            }, 300);
+              // Wait for animation to complete, then hide
+              setTimeout(() => {
+                sleakWidgetClosedBtn.style.display = "none";
+                sleakWidgetClosedBtn.classList.remove("image-hide");
+              }, 300);
 
-            setTimeout(() => {
-              // Show and animate open button in
-              sleakWidgetOpenedBtn.style.display = "flex";
-              sleakWidgetOpenedBtn.style.animation = "none";
-              void sleakWidgetOpenedBtn.offsetWidth;
-              sleakWidgetOpenedBtn.style.animation = "";
-            }, 150);
-            
+              setTimeout(() => {
+                // Show and animate open button in
+                sleakWidgetOpenedBtn.style.display = "flex";
+                sleakWidgetOpenedBtn.style.animation = "none";
+                void sleakWidgetOpenedBtn.offsetWidth;
+                sleakWidgetOpenedBtn.style.animation = "";
+              }, 150);
+            }
+
             if (firstButtonClick && !slkBodyRendered) {
               slkRenderWidgetBody(() => {
                 window.sleakWidgetOpenState = true;
@@ -732,12 +931,13 @@
             });
           });
 
-          queryScope
-            .querySelector("[close-popup]")
-            .addEventListener("click", function (event) {
+          const closePopupBtn = queryScope.querySelector("[close-popup]");
+          if (closePopupBtn) {
+            closePopupBtn.addEventListener("click", function (event) {
               event.stopPropagation();
               window.closeSleakWidget();
             });
+          }
         })();
 
         // event listener for scrolling
@@ -747,10 +947,8 @@
               const viewportHeightScroll = window.innerHeight;
               const widgetWrap = queryScope.querySelector("#sleak-widgetwrap");
               if (widgetWrap) {
-                widgetWrap.style.height =
-                  viewportHeightScroll + "px";
-                widgetWrap.style.minHeight =
-                  viewportHeightScroll + "px";
+                widgetWrap.style.height = viewportHeightScroll + "px";
+                widgetWrap.style.minHeight = viewportHeightScroll + "px";
               }
             }
           });
@@ -768,6 +966,7 @@
         // Chime & popup
 
         function showPopup() {
+          if (!sleakPopup) return;
           sleakPopup.style.display = "flex";
           sleakPopup.style.opacity = "0";
           sleakPopup.style.transform = "translateY(20px)";
@@ -802,26 +1001,43 @@
 
           window.populatePopup(payload.avatar, payload.name, pagePopup.message);
 
-          liveChatPopup.querySelector("#sleak-operatorchanged-avatar").src =
-            payload.avatar;
-          liveChatPopup.querySelector("#sleak-operatorchanged-name").innerText =
-            payload.name;
+          if (liveChatPopup) {
+            const avatarEl = liveChatPopup.querySelector(
+              "#sleak-operatorchanged-avatar"
+            );
+            const nameEl = liveChatPopup.querySelector(
+              "#sleak-operatorchanged-name"
+            );
+            if (avatarEl) avatarEl.src = payload.avatar;
+            if (nameEl) nameEl.innerText = payload.name;
 
-          if (!window.sleakWidgetOpenState) {
-            liveChatPopup.style.transition =
-              "opacity 0.2s ease, transform 0.2s ease";
-            liveChatPopup.style.transform = "translateY(20px)";
-            liveChatPopup.style.opacity = "0";
-            liveChatPopup.style.display = "flex";
-            setTimeout(function () {
-              liveChatPopup.style.opacity = "1";
-              liveChatPopup.style.transform = "translateY(0)";
-            }, 50);
-            setTimeout(() => (isTypingIndicator.style.display = "flex"), 1000);
+            if (!window.sleakWidgetOpenState) {
+              liveChatPopup.style.transition =
+                "opacity 0.2s ease, transform 0.2s ease";
+              liveChatPopup.style.transform = "translateY(20px)";
+              liveChatPopup.style.opacity = "0";
+              liveChatPopup.style.display = "flex";
+              setTimeout(function () {
+                liveChatPopup.style.opacity = "1";
+                liveChatPopup.style.transform = "translateY(0)";
+              }, 50);
+              if (isTypingIndicator) {
+                setTimeout(
+                  () => (isTypingIndicator.style.display = "flex"),
+                  1000
+                );
+              }
 
-            playAudio(sleakChimeOperator);
+              playAudio(sleakChimeOperator);
+            }
+            if (isTypingIndicator) {
+              setTimeout(
+                () => (isTypingIndicator.style.display = "none"),
+                6000
+              );
+            }
           }
-          setTimeout(() => (isTypingIndicator.style.display = "none"), 6000);
+
           setTimeout(function () {
             blockDefaultPopup = false;
             if (!chatCreated) {
@@ -831,7 +1047,7 @@
               }
             }
             setTimeout(function () {
-              if (!window.sleakWidgetOpenState) {
+              if (!window.sleakWidgetOpenState && chatInput) {
                 chatInput.style.transition =
                   "opacity 0.2s ease, transform 0.2s ease";
                 chatInput.style.transform = "translateY(20px)";
@@ -842,9 +1058,11 @@
                   chatInput.style.transform = "translateY(0)";
                 }, 50);
 
-                btnPulse.style.display = "flex";
-                btnPulse.style.opacity = "1";
-                btnPulse.style.transform = "scale(1)";
+                if (btnPulse) {
+                  btnPulse.style.display = "flex";
+                  btnPulse.style.opacity = "1";
+                  btnPulse.style.transform = "scale(1)";
+                }
               }
             }, 500);
           }, 7000);
@@ -922,7 +1140,9 @@
 
         function handleDragMove(e) {
           if (!isDragging || !window.sleakWidgetOpenState) return;
-          e.preventDefault();
+          if (e.cancelable) {
+            e.preventDefault();
+          }
           const touch = e.touches ? e.touches[0] : e;
           currentY = touch.clientY;
           dragDistance = currentY - startY;
@@ -953,6 +1173,9 @@
         }
 
         if (sleakMobileHandle) {
+          // Ensure mobile handle has pointer events enabled
+          sleakMobileHandle.style.pointerEvents = "auto";
+
           // Touch events for mobile
           sleakMobileHandle.addEventListener("touchstart", handleDragStart, {
             passive: false,
