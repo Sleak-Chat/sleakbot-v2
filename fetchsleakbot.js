@@ -303,14 +303,8 @@
       chatbotConfig?.publishing?.published &&
       chatbotConfig?.publishing?.published == true
     ) {
-      let sleakChime = new Audio(
-        `${baseUrl}/assets/sleak-chime.mp3`
-      );
-      sleakChime.preload = "auto";
-      let sleakChimeOperator = new Audio(
-        `${baseUrl}/assets/sleak-chime-operatorjoined.mp3`
-      );
-      sleakChimeOperator.preload = "auto";
+      let sleakChime = new Audio('https://cdn.sleak.chat/assets/sleak-chime.mp3');
+      let sleakChimeOperator = new Audio('https://cdn.sleak.chat/assets/sleak-chime-operatorjoined.mp3');
       let userHasInteracted = false;
       window.addEventListener("click", () => (userHasInteracted = true), {
         once: true,
@@ -325,38 +319,11 @@
       );
 
       function playAudio(audio) {
-        console.log("playing audio:", audio, "URL:", audio.src);
-        // Reset audio to beginning if it was previously played
-        audio.currentTime = 0;
-        // Ensure audio is loaded
-        if (audio.readyState >= 2) {
-          // Audio is loaded, try to play
-          audio.play().catch((error) => {
-            // Silently handle autoplay restrictions - this is expected behavior
-            if (error.name !== "NotAllowedError") {
-              console.error("Error playing audio:", error, "Audio URL:", audio.src);
-            }
-          });
-        } else {
-          // Add error handler for loading failures
-          audio.addEventListener("error", function onError(e) {
-            console.error("Error loading audio file:", audio.src, e);
-          }, { once: true });
-          
-          // Wait for audio to load, then play
-          audio.addEventListener(
-            "canplaythrough",
-            function playWhenReady() {
-              audio.removeEventListener("canplaythrough", playWhenReady);
-              audio.play().catch((error) => {
-                if (error.name !== "NotAllowedError") {
-                  console.error("Error playing audio:", error, "Audio URL:", audio.src);
-                }
-              });
-            },
-            { once: true }
-          );
-          audio.load();
+        if (!userHasInteracted) return;
+        try {
+          audio.play();
+        } catch (error) {
+          console.error('Error playing audio:', error);
         }
       }
 
