@@ -41,7 +41,7 @@
           const visitorId = getCookie(`sleakVisitorId_${chatbotId}`);
           const chatId = getCookie(`sleakChatId_${chatbotId}`);
           if (visitorId) {
-            document.getElementById('sleak-fullwidth-clone').src = `http://localhost:3000/d167f594-ccfe-41b3-93a9-7f4bcc321317?visitor_id=${visitorId}&chat_id=${chatId}&placement=fullwidth`;
+            document.getElementById('sleak-fullwidth-clone').src = `https://widget-v2-sigma.vercel.app/d167f594-ccfe-41b3-93a9-7f4bcc321317?visitor_id=${visitorId}&chat_id=${chatId}&placement=fullwidth`;
           } else {
             setTimeout(updateIframe, 100);
           }
