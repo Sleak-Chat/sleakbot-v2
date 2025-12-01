@@ -1311,6 +1311,27 @@
         }
       });
 
+      // Keyboard shortcut for toggling fullscreen (Command+E on Mac, Control+E on Windows)
+      window.addEventListener("keydown", function (event) {
+        const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+        const modifierKey = isMac ? event.metaKey : event.ctrlKey;
+        
+        if (modifierKey && event.key.toLowerCase() === "e") {
+          event.preventDefault();
+          if (iframeWidgetbody && iframeWidgetbody.contentWindow) {
+            window.sleakWidgetFullScreen = !window.sleakWidgetFullScreen;
+            window.toggleFullScreen(window.sleakWidgetFullScreen);
+            iframeWidgetbody.contentWindow.postMessage(
+              {
+                type: "toggleFullScreen",
+                expanded: window.sleakWidgetFullScreen,
+              },
+              "*"
+            );
+          }
+        }
+      });
+
       function eventHandling() {
         if (!chatCreated) {
           if (
