@@ -145,9 +145,13 @@
 }
 
 @keyframes blink {
-  50% {
+  33% {
     opacity: 1;
     transform: translateY(-3px);
+  }
+  66% {
+    opacity: 10;
+    transform: translateY(0px);
   }
 }
 .sleak-loading-dot {
@@ -218,6 +222,7 @@
   padding: 14px 18px;
   gap: 8px;
   position: relative;
+  width: 100%;
 }
 
 .sleak-popup-embed-headercontainer {
@@ -255,6 +260,7 @@
   color: #757575;
   font-weight: 500;
   max-width: 200px;
+  min-width: 100px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -262,8 +268,8 @@
 
 .sleak-popup-embed-closebtn {
   position: absolute;
-  right: 10px;
-  top: 10px;
+  right: 12px;
+  top: 12px;
   display: flex;
   align-items: center;
   justify-content: center;

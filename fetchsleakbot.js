@@ -303,8 +303,12 @@
       chatbotConfig?.publishing?.published &&
       chatbotConfig?.publishing?.published == true
     ) {
-      let sleakChime = new Audio('https://cdn.sleak.chat/assets/sleak-chime.mp3');
-      let sleakChimeOperator = new Audio('https://cdn.sleak.chat/assets/sleak-chime-operatorjoined.mp3');
+      let sleakChime = new Audio(
+        "https://cdn.sleak.chat/assets/sleak-chime.mp3"
+      );
+      let sleakChimeOperator = new Audio(
+        "https://cdn.sleak.chat/assets/sleak-chime-operatorjoined.mp3"
+      );
       let userHasInteracted = false;
       window.addEventListener("click", () => (userHasInteracted = true), {
         once: true,
@@ -323,7 +327,7 @@
         try {
           audio.play();
         } catch (error) {
-          console.error('Error playing audio:', error);
+          console.error("Error playing audio:", error);
         }
       }
 
@@ -739,20 +743,7 @@
           sleakEmbeddedWidget.style.opacity = "0";
           sleakEmbeddedWidget.style.transform = "translateY(12px)";
 
-          if (popupListContainer) {
-            Object.assign(popupListContainer.style, {
-              transform: "translateY(12px)",
-              opacity: "0",
-            });
-
-            // Wait for animation to complete before hiding
-            setTimeout(() => {
-              popupListContainer.style.display = "none";
-              sleakEmbeddedWidget.style.display = "none";
-            }, 400);
-          }
-
-          if (isPopover && chatInput){
+          if (isPopover && chatInput) {
             // For popover, just hide the widget
             setTimeout(() => {
               sleakEmbeddedWidget.style.display = "none";
@@ -907,7 +898,22 @@
           if (closePopupBtn) {
             closePopupBtn.addEventListener("click", function (event) {
               event.stopPropagation();
-              window.closeSleakWidget();
+              if (sleakPopup) {
+                Object.assign(sleakPopup.style, {
+                  transform: "translateY(12px)",
+                  opacity: "0",
+                });
+                Object.assign(liveChatPopup.style, {
+                  transform: "translateY(12px)",
+                  opacity: "0",
+                });
+
+                // Wait for animation to complete before hiding
+                setTimeout(() => {
+                  sleakPopup.style.display = "none";
+                  liveChatPopup.style.display = "none";
+                }, 400);
+              }
             });
           }
         })();
@@ -935,10 +941,9 @@
         var sessionStorageTriggerBased =
           chatbotId + "_sleakTriggerbasedPopupTriggered";
 
-        // Chime & popup
-
         function showPopup() {
           if (!sleakPopup) return;
+          isTypingIndicator.style.display = "none";
           sleakPopup.style.display = "flex";
           sleakPopup.style.opacity = "0";
           sleakPopup.style.transform = "translateY(20px)";
@@ -963,16 +968,7 @@
           }
         }
 
-        window.showTriggerBasedPopup = async function (payload) {
-          // console.log('showing livechat popup with payload = ', payload);
-
-          document.documentElement.style.setProperty(
-            "--sleak-loading-dot-color",
-            chatbotConfig.primary_color
-          );
-
-          window.populatePopup(payload.avatar, payload.name, pagePopup.message);
-
+        window.showOperatorPopup = function (payload) {
           if (liveChatPopup) {
             const avatarEl = liveChatPopup.querySelector(
               "#sleak-operatorchanged-avatar"
@@ -986,7 +982,7 @@
             if (!window.sleakWidgetOpenState) {
               liveChatPopup.style.transition =
                 "opacity 0.2s ease, transform 0.2s ease";
-              liveChatPopup.style.transform = "translateY(20px)";
+              liveChatPopup.style.transform = "translateY(12px)";
               liveChatPopup.style.opacity = "0";
               liveChatPopup.style.display = "flex";
               setTimeout(function () {
@@ -1009,6 +1005,14 @@
               );
             }
           }
+        }
+
+        window.showTriggerBasedPopup = async function (payload) {
+          // console.log('showing livechat popup with payload = ', payload);
+
+          window.populatePopup(payload.avatar, payload.name, pagePopup.message);
+
+          window.showOperatorPopup(payload);
 
           setTimeout(function () {
             blockDefaultPopup = false;
@@ -1238,6 +1242,7 @@
             window.toggleSleakWidget();
           } else if (event.data.type === "operatorChanged") {
             playAudio(sleakChimeOperator);
+            window.showOperatorPopup(event.data.payload);
           } else if (event.data.type === "domInitialized") {
             const sleakPageLoad = {
               type: "sleakPageLoad",
@@ -1315,7 +1320,7 @@
       window.addEventListener("keydown", function (event) {
         const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
         const modifierKey = isMac ? event.metaKey : event.ctrlKey;
-        
+
         if (modifierKey && event.key.toLowerCase() === "e") {
           event.preventDefault();
           if (iframeWidgetbody && iframeWidgetbody.contentWindow) {

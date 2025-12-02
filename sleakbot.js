@@ -380,9 +380,6 @@ async function sleakScript() {
     async function showTriggerBasedPopup(payload) {
       // console.log('showing livechat popup with payload = ', payload);
 
-      // Set the loading dot color based on the chatbot's primary color
-      document.documentElement.style.setProperty('--sleak-loading-dot-color', chatbotConfig.primary_color);
-
       // populate default popup
       slkPopupAvatar.src = payload.avatar;
       slkPopupAgentName.innerHTML = payload.name;
