@@ -295,6 +295,8 @@
     const rawChatbotConfigResponse = await chatbotConfigRequest.json();
     const chatbotConfig = rawChatbotConfigResponse.data.chatbot_config;
 
+    const widgetAppearance = chatbotConfig?.widget_appearance;
+
     let chatCreated = rawChatbotConfigResponse.data.chat_exists;
     let widgetOpenFlag = localStorage.getItem(`sleakWidget_${chatbotId}`);
 
@@ -352,7 +354,11 @@
         iframeWidgetbody = queryScope.querySelector("#sleak-widget-iframe");
         iframeWidgetbody.src =
           widgetBaseUrl +
-          `/${chatbotId}?visitor_id=${visitorId}&chat_id=${chatId}&placement=fullwidth`;
+          `/${chatbotId}?visitor_id=${visitorId}${
+            widgetAppearance?.start_component === "chat"
+              ? "&chat_id=" + chatId
+              : ""
+          }&placement=fullwidth`;
       } else {
         // Handle both default and popover placements with shared logic
         const isPopover = placementToUse === "popover";
@@ -360,9 +366,11 @@
         iframeWidgetbody = queryScope.querySelector("#sleak-widget-iframe");
         iframeWidgetbody.src =
           widgetBaseUrl +
-          `/${chatbotId}?visitor_id=${visitorId}&chat_id=${chatId}${
-            isPopover ? `&placement=popover` : ``
-          }`;
+          `/${chatbotId}?visitor_id=${visitorId}${
+            widgetAppearance?.start_component === "chat"
+              ? "&chat_id=" + chatId
+              : ""
+          }${isPopover ? `&placement=popover` : ``}`;
 
         const sleakWrap = queryScope.querySelector("#sleak-widgetwrap");
         const sleakButton = queryScope.querySelector("#sleak-buttonwrap");
@@ -637,9 +645,11 @@
         function slkRenderWidgetBody(callback) {
           iframeWidgetbody.src =
             widgetBaseUrl +
-            `/${chatbotId}?visitor_id=${visitorId}&chat_id=${chatId}${
-              isPopover ? `&placement=popover` : ``
-            }`;
+            `/${chatbotId}?visitor_id=${visitorId}${
+              widgetAppearance?.start_component === "chat"
+                ? "&chat_id=" + chatId
+                : ""
+            }${isPopover ? `&placement=popover` : ``}`;
 
           iframeWidgetbody.addEventListener(
             "load",
@@ -1005,7 +1015,7 @@
               );
             }
           }
-        }
+        };
 
         window.showTriggerBasedPopup = async function (payload) {
           // console.log('showing livechat popup with payload = ', payload);
@@ -1281,9 +1291,6 @@
               secure: true,
               path: "/",
             });
-            // iframeWidgetbody.src =
-            //   widgetBaseUrl +
-            //   `/${chatbotId}?visitor_id=${visitorId}&chat_id=${chatId}`;
           } else if (event.data.type === "showMessagePopup") {
             window.populatePopup(
               event.data.payload.avatar,
