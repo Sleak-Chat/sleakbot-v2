@@ -44,8 +44,8 @@
     const fileName =
       currentPlacement === "fullwidth"
         ? "sleakbot-fw"
-        : currentPlacement === "popover"
-        ? "sleakbot-po"
+        : currentPlacement === "overlay"
+        ? "sleakbot-ov"
         : "sleakbot";
 
     const sleakHtml = `${baseUrl}/${fileName}.html`;
@@ -101,7 +101,7 @@
             sleakbotScriptTag.nextSibling
           );
         }
-      } else if (currentPlacement === "popover") {
+      } else if (currentPlacement === "overlay") {
         document.body.appendChild(sleakHtml);
       } else {
         document.body.appendChild(sleakHtml);
@@ -360,8 +360,8 @@
               : ""
           }&placement=fullwidth`;
       } else {
-        // Handle both default and popover placements with shared logic
-        const isPopover = placementToUse === "popover";
+        // Handle both default and overlay placements with shared logic
+        const isOverlay = placementToUse === "overlay";
 
         iframeWidgetbody = queryScope.querySelector("#sleak-widget-iframe");
         iframeWidgetbody.src =
@@ -370,7 +370,7 @@
             widgetAppearance?.start_component === "chat"
               ? "&chat_id=" + chatId
               : ""
-          }${isPopover ? `&placement=popover` : ``}`;
+          }${isOverlay ? `&placement=overlay` : ``}`;
 
         const sleakWrap = queryScope.querySelector("#sleak-widgetwrap");
         const sleakButton = queryScope.querySelector("#sleak-buttonwrap");
@@ -426,7 +426,7 @@
         var viewportWidth2 = window.innerWidth;
 
         function setStylingMobile() {
-          if (isPopover && chatInput) {
+          if (isOverlay && chatInput) {
             Object.assign(chatInput.style, {
               bottom: `${chatbotConfig.btn_offset.y_mobile}px`,
             });
@@ -456,7 +456,7 @@
         }
 
         function setStylingDesktop() {
-          if (isPopover && chatInput) {
+          if (isOverlay && chatInput) {
             Object.assign(chatInput.style, {
               bottom: `${chatbotConfig.btn_offset.y_desktop}px`,
             });
@@ -492,7 +492,7 @@
         }
 
         function setStylingMobileMirrored() {
-          if (isPopover && chatInput) {
+          if (isOverlay && chatInput) {
             Object.assign(chatInput.style, {
               bottom: `${chatbotConfig.btn_offset.y_mobile}px`,
             });
@@ -532,7 +532,7 @@
         }
 
         function setStylingDesktopMirrored() {
-          if (isPopover && chatInput) {
+          if (isOverlay && chatInput) {
             Object.assign(chatInput.style, {
               bottom: `${chatbotConfig.btn_offset.y_desktop}px`,
             });
@@ -605,8 +605,8 @@
         // Apply styling on window resize
         window.addEventListener("resize", applyResponsiveStyling);
 
-        // Button setup (only for non-popover)
-        if (!isPopover && sleakBtnContainer) {
+        // Button setup (only for non-overlay)
+        if (!isOverlay && sleakBtnContainer) {
           var btnColor = chatbotConfig.primary_color;
           sleakBtnContainer.style.backgroundColor = btnColor;
           if (chatbotConfig.background_image) {
@@ -627,8 +627,8 @@
             }
           }
           slkShowBtn();
-        } else if (isPopover && chatInput) {
-          // For popover, show the chat input instead
+        } else if (isOverlay && chatInput) {
+          // For overlay, show the chat input instead
           function slkShowInput() {
             chatInput.style.display = "flex";
             chatInput.style.opacity = "0";
@@ -649,7 +649,7 @@
               widgetAppearance?.start_component === "chat"
                 ? "&chat_id=" + chatId
                 : ""
-            }${isPopover ? `&placement=popover` : ``}`;
+            }${isOverlay ? `&placement=overlay` : ``}`;
 
           iframeWidgetbody.addEventListener(
             "load",
@@ -711,9 +711,9 @@
 
           if (sleakPopup) sleakPopup.style.display = "none";
 
-          // Animate chatInput out for popover placement
+          // Animate chatInput out for overlay placement
           if (chatInput) {
-            if (isPopover) {
+            if (isOverlay) {
               chatInput.style.transition =
                 "opacity 0.3s ease, transform 0.3s ease";
               chatInput.style.opacity = "0";
@@ -753,12 +753,12 @@
           sleakEmbeddedWidget.style.opacity = "0";
           sleakEmbeddedWidget.style.transform = "translateY(12px)";
 
-          if (isPopover && chatInput) {
-            // For popover, just hide the widget
+          if (isOverlay && chatInput) {
+            // For overlay, just hide the widget
             setTimeout(() => {
               sleakEmbeddedWidget.style.display = "none";
               // Show the input again when widget closes with animation
-              if (chatInput && isPopover) {
+              if (chatInput && isOverlay) {
                 chatInput.style.display = "flex";
                 chatInput.style.transition =
                   "opacity 0.3s ease, transform 0.3s ease";
@@ -806,7 +806,7 @@
         };
 
         window.toggleFullScreen = async function (expanded = false) {
-          if (isPopover || !sleakButton) return; // Full screen not applicable for popover
+          if (isOverlay || !sleakButton) return; // Full screen not applicable for overlay
 
           if (expanded === true) {
             sleakButton.classList.add("full-chat-widget");
