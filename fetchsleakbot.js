@@ -402,9 +402,7 @@
         );
         const sleakWidgetOpenedBtn =
           queryScope.querySelector("#sleak-widget-open");
-        const sleakWidgetLoader = queryScope.querySelector(
-          "#sleak-button-spinner"
-        );
+          
         const slkPopupAvatar = queryScope.querySelector(
           "#sleak-popup-embed-avatar"
         );
@@ -515,6 +513,7 @@
               Object.assign(popupListWrap.style, {
                 left: `${chatbotConfig.btn_offset.x_mobile}px`,
                 right: `unset`,
+                alignItems: `flex-start`,
                 bottom: `${chatbotConfig.btn_offset.y_mobile + 80}px`,
               });
               popupListWrap.style.alignItems = "start";
@@ -555,6 +554,7 @@
               Object.assign(popupListWrap.style, {
                 left: `${chatbotConfig.btn_offset.x_desktop}px`,
                 right: `unset`,
+                alignItems: `flex-start`,
                 bottom: `${chatbotConfig.btn_offset.y_desktop + 80}px`,
               });
               popupListWrap.style.alignItems = "start";
@@ -688,6 +688,89 @@
           }
         };
 
+        // Function to create a new popup element
+        function createNewPopup(avatar, name, message) {
+          if (!sleakPopup) return null;
+
+          // Clone the existing popup
+          const newPopup = sleakPopup.cloneNode(true);
+          
+          // Generate unique IDs for the new popup elements
+          const timestamp = Date.now();
+          const newPopupId = `sleak-popup-embed-${timestamp}`;
+          // Remove the old ID and set a new unique ID
+          newPopup.removeAttribute("id");
+          newPopup.id = newPopupId;
+          
+          // Update IDs for child elements
+          const newAvatar = newPopup.querySelector("#sleak-popup-embed-avatar");
+          const newAgentName = newPopup.querySelector("#sleak-popup-embed-agentname");
+          const newBodyMessage = newPopup.querySelector("#sleak-popup-embed-body");
+          const newCloseBtn = newPopup.querySelector("#sleak-popup-embed-closebtn-icon");
+          
+          if (newAvatar) {
+            newAvatar.removeAttribute("id");
+            newAvatar.id = `sleak-popup-embed-avatar-${timestamp}`;
+            newAvatar.src = avatar;
+          }
+          if (newAgentName) {
+            newAgentName.removeAttribute("id");
+            newAgentName.id = `sleak-popup-embed-agentname-${timestamp}`;
+            newAgentName.textContent = name;
+          }
+          if (newBodyMessage) {
+            newBodyMessage.removeAttribute("id");
+            newBodyMessage.id = `sleak-popup-embed-body-${timestamp}`;
+            newBodyMessage.textContent = message;
+          }
+          if (newCloseBtn) {
+            newCloseBtn.removeAttribute("id");
+            newCloseBtn.id = `sleak-popup-embed-closebtn-icon-${timestamp}`;
+          }
+
+          // Set up close button event listener for the new popup
+          const closePopupBtn = newPopup.querySelector("[close-popup]");
+          if (closePopupBtn) {
+            closePopupBtn.addEventListener("click", function (event) {
+              event.stopPropagation();
+              Object.assign(newPopup.style, {
+                transform: "translateY(12px)",
+                opacity: "0",
+              });
+
+              // Wait for animation to complete before removing
+              setTimeout(() => {
+                newPopup.remove();
+              }, 400);
+            });
+          }
+
+          newPopup.addEventListener("click", function () {
+            window.toggleSleakWidget();
+          });
+
+          // Find the last popup element (in case there are multiple)
+          const allPopups = queryScope.querySelectorAll(".sleak-popup-embed");
+          const lastPopup = allPopups.length > 0 ? allPopups[allPopups.length - 1] : sleakPopup;
+          
+          // Insert the new popup after the last existing popup
+          lastPopup.parentNode.insertBefore(newPopup, lastPopup.nextSibling);
+
+          // Show the new popup with animation
+          newPopup.style.display = "flex";
+          newPopup.style.opacity = "0";
+          newPopup.style.transform = "translateY(20px)";
+          newPopup.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+          setTimeout(function () {
+            newPopup.style.opacity = "1";
+            newPopup.style.transform = "translateY(0)";
+          }, 50);
+
+          newPopup.setAttribute("open-widget", "")
+
+          return newPopup;
+        }
+
         // Set initial popup content (only if popup elements exist)
         if (slkPopupAvatar && slkPopupAgentName && slkPopupBodyMessage) {
           window.populatePopup(
@@ -708,7 +791,22 @@
           sleakEmbeddedWidget.style.display = "flex";
           iframeWidgetbody.style.pointerEvents = "auto";
 
-          if (sleakPopup) sleakPopup.style.display = "none";
+          // Hide all popups with transition animation
+          const allPopups = queryScope.querySelectorAll(".sleak-popup-embed");
+          allPopups.forEach((popup) => {
+            Object.assign(popup.style, {
+              transform: "translateY(12px)",
+              opacity: "0",
+            });
+          });
+          // Wait for animation to complete before hiding
+          setTimeout(() => {
+            allPopups.forEach((popup) => {
+              if (popup.id !== "sleak-popup-embed"){
+                popup.remove();
+              }
+            });
+          }, 300);
 
           // Animate chatInput out for overlay placement
           if (chatInput) {
@@ -955,7 +1053,7 @@
           isTypingIndicator.style.display = "none";
           sleakPopup.style.display = "flex";
           sleakPopup.style.opacity = "0";
-          sleakPopup.style.transform = "translateY(20px)";
+          sleakPopup.style.transform = "translateY(12px)";
           sleakPopup.style.transition =
             "opacity 0.5s ease, transform 0.5s ease";
           setTimeout(function () {
@@ -1291,12 +1389,35 @@
               path: "/",
             });
           } else if (event.data.type === "showMessagePopup") {
-            window.populatePopup(
-              event.data.payload.avatar,
-              event.data.payload.name,
-              event.data.payload.message
-            );
-            if (!window.sleakWidgetOpenState) showPopup();
+            // Check if there's already a visible popup (check all popups, not just the first one)
+            const allPopups = queryScope.querySelectorAll(".sleak-popup-embed");
+            let existingPopupVisible = false;
+            
+            for (let i = 0; i < allPopups.length; i++) {
+              const popup = allPopups[i];
+              const computedStyle = window.getComputedStyle(popup);
+              if (computedStyle.display === "flex" || popup.style.display === "flex") {
+                existingPopupVisible = true;
+                break;
+              }
+            }
+            
+            if (existingPopupVisible) {
+              // Create a new popup underneath the existing one(s)
+              createNewPopup(
+                event.data.payload.avatar,
+                event.data.payload.name,
+                event.data.payload.message
+              );
+            } else {
+              // No existing popup, use the original behavior
+              window.populatePopup(
+                event.data.payload.avatar,
+                event.data.payload.name,
+                event.data.payload.message
+              );
+              if (!window.sleakWidgetOpenState) showPopup();
+            }
             playAudio(sleakChime);
           } else if (event.data.type === "sleakChatClosed") {
             deleteCookie(`sleakChatId_${chatbotId}`, { path: "/" });
