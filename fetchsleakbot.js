@@ -804,6 +804,8 @@
             allPopups.forEach((popup) => {
               if (popup.id !== "sleak-popup-embed"){
                 popup.remove();
+              } else {
+                popup.style.display = "none";
               }
             });
           }, 300);
