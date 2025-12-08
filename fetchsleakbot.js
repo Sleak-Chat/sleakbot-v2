@@ -546,7 +546,6 @@
             if (sleakWidgetwrap) {
               Object.assign(sleakWidgetwrap.style, {
                 justifyContent: "flex-start",
-                alignItems: "flex-start",
                 left: `${chatbotConfig.btn_offset.x_desktop}px`,
                 bottom: `${chatbotConfig.btn_offset.y_desktop}px`,
               });
