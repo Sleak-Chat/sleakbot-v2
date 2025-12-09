@@ -513,10 +513,12 @@
               Object.assign(popupListWrap.style, {
                 left: `${chatbotConfig.btn_offset.x_mobile}px`,
                 right: `unset`,
-                alignItems: `flex-start`,
                 bottom: `${chatbotConfig.btn_offset.y_mobile + 80}px`,
               });
-              popupListWrap.style.alignItems = "start";
+            }
+
+            if (popupListContainer) {
+              popupListContainer.style.alignItems = `flex-start`;
             }
 
             if (sleakWrap) {
@@ -554,10 +556,12 @@
               Object.assign(popupListWrap.style, {
                 left: `${chatbotConfig.btn_offset.x_desktop}px`,
                 right: `unset`,
-                alignItems: `flex-start`,
                 bottom: `${chatbotConfig.btn_offset.y_desktop + 80}px`,
               });
-              popupListWrap.style.alignItems = "start";
+            }
+
+            if (popupListContainer) {
+              popupListContainer.style.alignItems = `flex-start`;
             }
 
             if (sleakButton) {

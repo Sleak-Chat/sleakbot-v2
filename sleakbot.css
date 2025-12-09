@@ -146,12 +146,12 @@
 
 @keyframes blink {
   33% {
-    opacity: 1;
-    transform: translateY(-3px);
+    opacity: 0.5;
+    transform: translateY(0px);
   }
   66% {
-    opacity: 10;
-    transform: translateY(0px);
+    opacity: 1;
+    transform: translateY(-3px);
   }
 }
 .sleak-loading-dot {
