@@ -74,7 +74,7 @@
 #sleak-mobile-handle{
   z-index: 9999;
   position: absolute;
-  top: 12px;
+  top: 10px;
   width: 64px;
   height: 4px;
   background-color: #fff;
@@ -647,13 +647,13 @@
 
   #sleak-widget-iframe {
     z-index: 1;
-    height: 100vh !important;
+    height: 100svh !important;
     height: -webkit-fill-available;
     width: 100vw !important;
     min-width: 100vw;
     border-radius: 20px 20px 0 0;
-    border: solid 0px #e6e6e6 !important;
-    max-height: 700px;
+    border: solid 0px #e6e6e600 !important;
+    max-height: calc(100svh * 0.9);
     box-shadow: 0 0 0 200vw rgba(0, 0, 0, 0.5);
     transition: none !important;
   }

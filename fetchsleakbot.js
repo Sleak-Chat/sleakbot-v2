@@ -580,6 +580,8 @@
         }
 
         function applyResponsiveStyling() {
+          if (window.sleakWidgetFullScreen) return;
+          
           viewportWidth2 = window.innerWidth;
           if (viewportWidth2 < 480) {
             if (
@@ -1249,10 +1251,6 @@
           if (dragDistance > 100) {
             // Close widget if dragged more than 100px
             window.closeSleakWidget();
-
-            if (window.matchMedia("(max-width: 768px)").matches) {
-              document.body.style.overflow = "auto";
-            }
           } else {
             // Reset position if dragged less than 100px
             sleakWidgetwrap.style.transform = "translateY(0)";
