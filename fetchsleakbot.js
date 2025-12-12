@@ -670,6 +670,7 @@
 
         window.sleakWidgetOpenState = false;
         window.sleakWidgetFullScreen = false;
+        window.sleakMobileWidget;
         let firstButtonClick = true;
 
         // widget preview
@@ -1659,15 +1660,19 @@
           );
         }
 
-        // console.log('chatbotConfig', chatbotConfig);
         if (chatbotConfig.custom_fields_config) customFields();
 
-        function sendWidth() {
-          handleEvent({ type: "sleakWidthResize", width: window.innerWidth });
+        function checkResize() {
+          const isMobile = window.innerWidth < 480;
+
+          if (isMobile !== window.sleakMobileWidget){
+            window.sleakMobileWidget = isMobile;
+            handleEvent({ type: "sleakWidthResize", mobile: isMobile });
+          }
         }
 
-        window.addEventListener("resize", sendWidth);
-        sendWidth();
+        window.addEventListener("resize", checkResize);
+        checkResize();
       }
     }
   }
