@@ -431,7 +431,7 @@
 
             if (popupListWrap) {
               Object.assign(popupListWrap.style, {
-                bottom: `${chatbotConfig.btn_offset.y_mobile + 64}px`,
+                bottom: `${chatbotConfig.btn_offset.y_mobile + 64 +8}px`,
               });
             }
           } else {
@@ -447,7 +447,7 @@
               Object.assign(popupListWrap.style, {
                 right: `${chatbotConfig.btn_offset.x_mobile}px`,
                 left: `unset`,
-                bottom: `${chatbotConfig.btn_offset.y_mobile + 64}px`,
+                bottom: `${chatbotConfig.btn_offset.y_mobile + 64 + 8}px`,
               });
             }
           }
@@ -461,7 +461,7 @@
 
             if (popupListWrap) {
               Object.assign(popupListWrap.style, {
-                bottom: `${chatbotConfig.btn_offset.y_desktop + 64}px`,
+                bottom: `${chatbotConfig.btn_offset.y_desktop + 80 + 8}px`,
               });
             }
           } else {
@@ -476,7 +476,7 @@
               Object.assign(popupListWrap.style, {
                 right: `${chatbotConfig.btn_offset.x_desktop}px`,
                 left: `unset`,
-                bottom: `${chatbotConfig.btn_offset.y_desktop + 80}px`,
+                bottom: `${chatbotConfig.btn_offset.y_desktop + 80 + 8}px`,
               });
             }
 
