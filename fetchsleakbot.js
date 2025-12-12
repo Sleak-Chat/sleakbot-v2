@@ -623,12 +623,10 @@
           function slkShowBtn() {
             if (sleakButton) {
               sleakButton.style.display = "flex";
-              sleakButton.style.opacity = "0";
-              sleakButton.style.transform = "scale(0.8)";
               setTimeout(function () {
                 sleakButton.style.opacity = "1";
                 sleakButton.style.transform = "scale(1)";
-              }, 500);
+              }, 300);
             }
           }
           slkShowBtn();
@@ -636,12 +634,10 @@
           // For overlay, show the chat input instead
           function slkShowInput() {
             chatInput.style.display = "flex";
-            chatInput.style.opacity = "0";
-            chatInput.style.transform = "scale(0.8)";
             setTimeout(function () {
               chatInput.style.opacity = "1";
               chatInput.style.transform = "scale(1)";
-            }, 500);
+            }, 300);
           }
           slkShowInput();
         }
