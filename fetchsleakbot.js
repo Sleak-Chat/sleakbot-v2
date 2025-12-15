@@ -416,6 +416,10 @@
           "#sleak-mobile-handle"
         );
 
+        if (chatCreated){
+          sleakEmbeddedWidget.style.display = "block";
+        }
+        
         let isDragging = false;
         let startY = 0;
         let currentY = 0;
@@ -858,7 +862,7 @@
           if (isOverlay && chatInput) {
             // For overlay, just hide the widget
             setTimeout(() => {
-              sleakEmbeddedWidget.style.display = "none";
+              sleakEmbeddedWidget.style.pointerEvents = "none";
               // Show the input again when widget closes with animation
               if (chatInput && isOverlay) {
                 chatInput.style.display = "flex";
