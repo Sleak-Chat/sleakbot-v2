@@ -1439,8 +1439,6 @@
             });
           } else if (event.data.type === "toggleFullScreen") {
             window.toggleFullScreen(event.data.expanded);
-          } else if (event.data.type === "closeActiveChat") {
-            deleteCookie(`sleakChatId_${chatbotId}`, { path: "/" });
           } else {
             if (event.data.type !== "showOutputLogsAdmin")
               console.log(event.data);
