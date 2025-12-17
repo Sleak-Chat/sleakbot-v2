@@ -115,7 +115,7 @@ async function sleakScript() {
         'style',
         'left: ' + chatbotConfig.btn_offset.x_desktop + 'px; bottom: ' + chatbotConfig.btn_offset.y_desktop + 'px;' + 'width: 100vw; justify-content: flex-start; align-items: flex-start;'
       );
-      sleakWidgetwrap.setAttribute('style', 'width: 420px; height: 100%;');
+      sleakWidgetwrap.setAttribute('style', 'width: 28.75rem; height: 100%;');
       popupListWrap.setAttribute('style', 'right: unset; left: 0;');
       sleakButton.setAttribute('style', 'right: unset; left: 0; transform: scaleX(-1) !important');
       document.querySelector('#popup-list-wrap').style.alignItems = 'start';

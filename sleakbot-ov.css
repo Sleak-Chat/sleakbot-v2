@@ -41,19 +41,27 @@
   z-index: 999999;
 }
 
-#sleak-mobile-handle{
+#sleak-mobile-handle {
   z-index: 9999;
   position: absolute;
-  top: 10px;
+  top: 0;
+  display: none;
+  cursor: grab;
+  width: calc(100% - 128px);
+  justify-content: center;
+  align-items: start;
+  padding: 10px 0;
+  padding-bottom: 40px;
+  margin: 0 64px;
+}
+
+#sleak-mobile-handle span {
+  display: inline-block;
   width: 64px;
   height: 4px;
   background-color: #fff;
   border-radius: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  cursor: grab;
   opacity: .6;
-  display: none;
 }
 
 #sleak-body-embed {
@@ -408,14 +416,13 @@
 
   #sleak-widget-iframe {
     z-index: 1;
-    height: 100vh !important;
+    height: 100svh !important;
     height: -webkit-fill-available;
     width: 100vw !important;
     min-width: 100vw;
     border-radius: 20px 20px 0 0;
     border: solid 0px #e6e6e6 !important;
-    max-height: 700px;
-    box-shadow: 0 0 0 200vw rgba(0, 0, 0, 0.5);
+    max-height: calc(100svh * 0.95);
     transition: none !important;
   }
 
@@ -452,6 +459,7 @@
     height: max-content !important;
     border: solid 0px #e6e6e6 !important;
     align-items: flex-end;
+    box-shadow: 0 0 0 200vw rgba(0, 0, 0, 0.5);
     overflow: unset !important;
     transition: transform .3s cubic-bezier(.4, 0, .2, 1), opacity .3s cubic-bezier(.4, 0, .2, 1), border .0s ease-in, border-radius .0s ease-in;
   }
@@ -461,7 +469,7 @@
   }
 
   #sleak-mobile-handle {
-    display: block;
+    display: flex;
   }
 
   .sleak-popup-chatinput-input-wrapper {
