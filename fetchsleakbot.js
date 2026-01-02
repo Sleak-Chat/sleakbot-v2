@@ -1528,7 +1528,8 @@
               currentEvents = currentEvents.slice(-100);
             }
             localStorage.setItem(cookieKey, JSON.stringify(currentEvents));
-            // console.log('updated localstorage', localStorage.getItem(cookieKey));
+            
+            return; // Don't post message if chat is not created yet
           }
 
           if (iframeWidgetbody && iframeWidgetbody.contentWindow) {
