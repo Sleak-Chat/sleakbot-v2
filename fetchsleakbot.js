@@ -871,6 +871,11 @@
           sleakEmbeddedWidget.style.opacity = "0";
           sleakEmbeddedWidget.style.transform = "translateY(12px)";
 
+          iframeWidgetbody.contentWindow.postMessage(
+            { type: "sleakWidgetClosed" },
+            "*"
+          );
+
           if (isOverlay && chatInput) {
             // For overlay, just hide the widget
             setTimeout(() => {
