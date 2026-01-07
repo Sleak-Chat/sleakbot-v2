@@ -1477,8 +1477,6 @@
               secure: true,
               path: "/",
             });
-            
-            window.currentUrlEvent();
           } else if (event.data.type === "toggleFullScreen") {
             window.toggleFullScreen(event.data.expanded);
           } else {
