@@ -1428,6 +1428,8 @@
               secure: true,
               path: "/",
             });
+
+            window.currentUrlEvent();
           } else if (event.data.type === "showMessagePopup") {
             // Check if there's already a visible popup (check all popups, not just the first one)
             const allPopups = queryScope.querySelectorAll(".sleak-popup-embed");
@@ -1475,6 +1477,8 @@
               secure: true,
               path: "/",
             });
+            
+            window.currentUrlEvent();
           } else if (event.data.type === "toggleFullScreen") {
             window.toggleFullScreen(event.data.expanded);
           } else {
@@ -1607,7 +1611,7 @@
 
         interceptGlobalEvents();
 
-        async function currentUrlEvent() {
+         window.currentUrlEvent = async function() {
           const eventPayload = {
             type: "sleakNewEvent",
             payload: {
@@ -1623,7 +1627,7 @@
           // console.log('currentUrlEvent full payload:', JSON.stringify(eventPayload, null, 2));
           handleEvent(eventPayload);
         }
-        currentUrlEvent();
+        window.currentUrlEvent();
 
         if (!chatCreated) {
           // local event queue for if chat does not exist
