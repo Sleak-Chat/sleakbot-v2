@@ -626,6 +626,8 @@
             sleakBtnContainer.style.backgroundImage = `url("${chatbotConfig.background_image}")`;
             if (sleakWidgetOpenedBtn) sleakWidgetOpenedBtn.remove();
             if (sleakWidgetClosedBtn) sleakWidgetClosedBtn.remove();
+          } else if (chatbotConfig.widget_appearance?.widget_icon && chatbotConfig.widget_appearance?.widget_icon !== ""){
+            sleakWidgetClosedBtn.src = chatbotConfig.widget_appearance.widget_icon;
           }
 
           function slkShowBtn() {
