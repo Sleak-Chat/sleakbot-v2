@@ -30,16 +30,16 @@
     if (scriptSrc.includes("localhost")) {
       baseUrl = "http://localhost:8001";
       widgetBaseUrl = "http://localhost:3000";
-      // widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
+      // widgetBaseUrl = "https://dev.widget.sleak.chat";
     } else if (dev === true) {
       baseUrl = "https://sleak-chat.github.io/sleakbot-v2";
-      widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
+      widgetBaseUrl = "https://dev.widget.sleak.chat";
     } else {
       // baseUrl = "https://cdn.sleak.chat";
       // widgetBaseUrl = "https://widget.sleak.chat";
 
       baseUrl = "https://sleak-chat.github.io/sleakbot-v2";
-      widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
+      widgetBaseUrl = "https://dev.widget.sleak.chat";
     }
     const fileName =
       currentPlacement === "fullwidth"
@@ -246,7 +246,7 @@
       //   }
 
       //   chatId = chatId = getCookie(`sleakChatId_${chatbotId}`);
-      // } 
+      // }
       if (!chatId) {
         chatId = crypto.randomUUID();
         setCookie(`sleakChatId_${chatbotId}`, chatId, {
@@ -294,11 +294,11 @@
       });
 
       const rawChatbotConfigResponse = await chatbotConfigRequest.json();
-      
+
       if (!rawChatbotConfigResponse.data) {
         const newChatId = crypto.randomUUID();
         chatId = newChatId;
-        
+
         if (!scriptCookies) {
           setCookie(`sleakChatId_${chatbotId}`, newChatId, {
             expires: 365,
@@ -309,10 +309,10 @@
         } else {
           localStorage.setItem(`sleakChatId_${chatbotId}`, newChatId);
         }
-        
+
         return fetchChatbotConfig(newChatId);
       }
-      
+
       return rawChatbotConfigResponse;
     };
 
@@ -376,7 +376,6 @@
 
       const urlParams = new URLSearchParams(window.location.search);
 
-
       if (placementToUse == "fullwidth") {
         iframeWidgetbody = queryScope.querySelector("#sleak-widget-iframe");
         iframeWidgetbody.src =
@@ -385,7 +384,11 @@
             widgetAppearance?.start_component === "chat"
               ? "&chat_id=" + chatId
               : ""
-          }&placement=fullwidth${urlParams.has("render_all_messages") ? `&render_all_messages=true` : ``}`;
+          }&placement=fullwidth${
+            urlParams.has("render_all_messages")
+              ? `&render_all_messages=true`
+              : ``
+          }`;
       } else {
         // Handle both default and overlay placements with shared logic
         const isOverlay = placementToUse === "overlay";
@@ -397,7 +400,11 @@
             widgetAppearance?.start_component === "chat"
               ? "&chat_id=" + chatId
               : ""
-          }${isOverlay ? `&placement=overlay` : ``}${urlParams.has("render_all_messages") ? `&render_all_messages=true` : ``}`;
+          }${isOverlay ? `&placement=overlay` : ``}${
+            urlParams.has("render_all_messages")
+              ? `&render_all_messages=true`
+              : ``
+          }`;
 
         const sleakWrap = queryScope.querySelector("#sleak-widgetwrap");
         const sleakButton = queryScope.querySelector("#sleak-buttonwrap");
@@ -649,8 +656,12 @@
             sleakBtnContainer.style.backgroundImage = `url("${chatbotConfig.background_image}")`;
             if (sleakWidgetOpenedBtn) sleakWidgetOpenedBtn.remove();
             if (sleakWidgetClosedBtn) sleakWidgetClosedBtn.remove();
-          } else if (chatbotConfig.widget_appearance?.widget_icon && chatbotConfig.widget_appearance?.widget_icon !== ""){
-            sleakWidgetClosedBtn.src = chatbotConfig.widget_appearance.widget_icon;
+          } else if (
+            chatbotConfig.widget_appearance?.widget_icon &&
+            chatbotConfig.widget_appearance?.widget_icon !== ""
+          ) {
+            sleakWidgetClosedBtn.src =
+              chatbotConfig.widget_appearance.widget_icon;
           }
 
           function slkShowBtn() {
@@ -683,7 +694,11 @@
               widgetAppearance?.start_component === "chat"
                 ? "&chat_id=" + chatId
                 : ""
-            }${isOverlay ? `&placement=overlay` : ``}${urlParams.has("render_all_messages") ? `&render_all_messages=true` : ``}`;
+            }${isOverlay ? `&placement=overlay` : ``}${
+              urlParams.has("render_all_messages")
+                ? `&render_all_messages=true`
+                : ``
+            }`;
 
           iframeWidgetbody.addEventListener(
             "load",
@@ -886,7 +901,6 @@
             sleakEmbeddedWidget.style.opacity = "1";
             sleakEmbeddedWidget.style.transform = "translateY(0)";
           }, 10);
-
         }
 
         window.closeSleakWidget = function () {
@@ -1011,13 +1025,12 @@
 
             // Wait for iframe contentWindow to be available
             const sendOpenMessage = (retries = 0) => {
-              if (iframeWidgetbody && iframeWidgetbody.style.pointerEvents === "auto") {
+              if (iframeWidgetbody && iframeWidgetbody.contentWindow && iframeWidgetbody.style.pointerEvents === "auto") {
                 iframeWidgetbody.contentWindow.postMessage(
                   { type: "sleakWidgetOpen" },
                   "*"
                 );
               } else if (retries < 10) {
-                // Retry after a short delay if not ready yet (max 100 retries)
                 requestAnimationFrame(() => {
                   setTimeout(() => sendOpenMessage(retries + 1), 100);
                 });
@@ -1401,7 +1414,7 @@
 
       window.addEventListener("message", (event) => {
         if (
-          event.origin === "https://widget-v2-sigma.vercel.app" ||
+          event.origin === "https://dev.widget.sleak.chat" ||
           event.origin === "https://widget.sleak.chat" ||
           event.origin === "http://localhost:3000"
         ) {
@@ -1560,7 +1573,7 @@
               currentEvents = currentEvents.slice(-100);
             }
             localStorage.setItem(cookieKey, JSON.stringify(currentEvents));
-            
+
             return; // Don't post message if chat is not created yet
           }
 
@@ -1634,7 +1647,7 @@
 
         interceptGlobalEvents();
 
-         window.currentUrlEvent = async function() {
+        window.currentUrlEvent = async function () {
           const eventPayload = {
             type: "sleakNewEvent",
             payload: {
@@ -1649,7 +1662,7 @@
           };
           // console.log('currentUrlEvent full payload:', JSON.stringify(eventPayload, null, 2));
           handleEvent(eventPayload);
-        }
+        };
         window.currentUrlEvent();
 
         if (!chatCreated) {
