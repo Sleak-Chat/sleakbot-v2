@@ -284,8 +284,7 @@
       }
     }
 
-    const timestamp = new Date().getTime();
-    const chatbotConfigEndpoint = `${widgetBaseUrl}/api/config?id=${chatbotId}&chat_id=${chatId}&t=${timestamp}`;
+    const chatbotConfigEndpoint = `${widgetBaseUrl}/api/config?id=${chatbotId}&chat_id=${chatId}`;
     const chatbotConfigRequest = await fetch(chatbotConfigEndpoint, {
       method: "get",
       headers: {
