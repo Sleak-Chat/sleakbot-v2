@@ -30,7 +30,7 @@
     if (scriptSrc.includes("localhost")) {
       baseUrl = "http://localhost:8001";
       widgetBaseUrl = "http://localhost:3000";
-      // widgetBaseUrl = "https://dev.widget.sleak.chat";
+      // widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
     } else if (dev === true) {
       baseUrl = "https://sleak-chat.github.io/sleakbot-v2";
       widgetBaseUrl = "https://dev.widget.sleak.chat";
@@ -39,7 +39,7 @@
       // widgetBaseUrl = "https://widget.sleak.chat";
 
       baseUrl = "https://sleak-chat.github.io/sleakbot-v2";
-      widgetBaseUrl = "https://dev.widget.sleak.chat";
+      widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
     }
     const fileName =
       currentPlacement === "fullwidth"
