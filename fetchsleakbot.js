@@ -284,15 +284,39 @@
       }
     }
 
-    const chatbotConfigEndpoint = `${widgetBaseUrl}/api/config?id=${chatbotId}&chat_id=${chatId}`;
-    const chatbotConfigRequest = await fetch(chatbotConfigEndpoint, {
-      method: "get",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const fetchChatbotConfig = async (currentChatId) => {
+      const chatbotConfigEndpoint = `${widgetBaseUrl}/api/config?id=${chatbotId}&chat_id=${currentChatId}`;
+      const chatbotConfigRequest = await fetch(chatbotConfigEndpoint, {
+        method: "get",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    const rawChatbotConfigResponse = await chatbotConfigRequest.json();
+      const rawChatbotConfigResponse = await chatbotConfigRequest.json();
+      
+      if (!rawChatbotConfigResponse.data) {
+        const newChatId = crypto.randomUUID();
+        chatId = newChatId;
+        
+        if (!scriptCookies) {
+          setCookie(`sleakChatId_${chatbotId}`, newChatId, {
+            expires: 365,
+            sameSite: "None",
+            secure: true,
+            path: "/",
+          });
+        } else {
+          localStorage.setItem(`sleakChatId_${chatbotId}`, newChatId);
+        }
+        
+        return fetchChatbotConfig(newChatId);
+      }
+      
+      return rawChatbotConfigResponse;
+    };
+
+    const rawChatbotConfigResponse = await fetchChatbotConfig(chatId);
     const chatbotConfig = rawChatbotConfigResponse.data.chatbot_config;
 
     const widgetAppearance = chatbotConfig?.widget_appearance;
