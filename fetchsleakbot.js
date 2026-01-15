@@ -30,7 +30,6 @@
     if (scriptSrc.includes("localhost")) {
       baseUrl = "http://localhost:8001";
       widgetBaseUrl = "http://localhost:3000";
-      // widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
     } else if (dev === true) {
       baseUrl = "https://sleak-chat.github.io/sleakbot-v2";
       widgetBaseUrl = "https://dev.widget.sleak.chat";
@@ -1418,7 +1417,7 @@
           event.origin === "https://widget.sleak.chat" ||
           event.origin === "http://localhost:3000"
         ) {
-          // console.log("Received message:", event);
+          console.log(event); 
 
           if (
             event.data.type === "closePopup" ||
