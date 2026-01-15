@@ -27,12 +27,13 @@
         ? instancePlacement
         : placement;
     // env control
-    if (scriptSrc.includes("localhost")) {
-      baseUrl = "http://localhost:8001";
-      widgetBaseUrl = "http://localhost:3000";
-    } else if (dev === true) {
+
+    if (dev === true) {
       baseUrl = "https://sleak-chat.github.io/sleakbot-v2";
       widgetBaseUrl = "https://dev.widget.sleak.chat";
+    } else if (scriptSrc.includes("localhost")) {
+      baseUrl = "http://localhost:8001";
+      widgetBaseUrl = "http://localhost:3000";
     } else {
       // baseUrl = "https://cdn.sleak.chat";
       // widgetBaseUrl = "https://widget.sleak.chat";
@@ -1386,6 +1387,7 @@
       window.addEventListener("message", (event) => {
         if (
           event.origin === "https://dev.widget.sleak.chat" ||
+          event.origin === "https://widget-v2-sigma.vercel.app" ||
           event.origin === "https://widget.sleak.chat" ||
           event.origin === "http://localhost:3000"
         ) {
