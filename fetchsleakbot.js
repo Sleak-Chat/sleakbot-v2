@@ -287,9 +287,7 @@
       const chatbotConfigEndpoint = `${widgetBaseUrl}/api/config?id=${chatbotId}&chat_id=${currentChatId}`;
       const chatbotConfigRequest = await fetch(chatbotConfigEndpoint, {
         method: "get",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        // Don't include Content-Type header for GET requests to avoid CORS preflight
       });
 
       const rawChatbotConfigResponse = await chatbotConfigRequest.json();
@@ -1415,9 +1413,10 @@
         if (
           event.origin === "https://dev.widget.sleak.chat" ||
           event.origin === "https://widget.sleak.chat" ||
+          event.origin === "https://widget-v2-sigma.vercel.app" ||
           event.origin === "http://localhost:3000"
         ) {
-          console.log(event); 
+          // console.log("Received message:", event); 
 
           if (
             event.data.type === "closePopup" ||
