@@ -434,8 +434,6 @@
         const sleakWidgetClosedBtn = queryScope.querySelector(
           "#sleak-widget-closed"
         );
-        const sleakWidgetOpenedBtn =
-          queryScope.querySelector("#sleak-widget-open");
 
         const slkPopupAvatar = queryScope.querySelector(
           "#sleak-popup-embed-avatar"
@@ -654,7 +652,6 @@
           sleakBtnContainer.style.backgroundColor = btnColor;
           if (chatbotConfig.background_image) {
             sleakBtnContainer.style.backgroundImage = `url("${chatbotConfig.background_image}")`;
-            if (sleakWidgetOpenedBtn) sleakWidgetOpenedBtn.remove();
             if (sleakWidgetClosedBtn) sleakWidgetClosedBtn.remove();
           } else if (
             chatbotConfig.widget_appearance?.widget_icon &&
@@ -941,37 +938,22 @@
 
           if (
             window.sleakWidgetOpenState &&
-            sleakWidgetOpenedBtn &&
-            sleakWidgetClosedBtn
+            sleakButton
           ) {
-            sleakWidgetOpenedBtn.classList.add("image-hide");
-            sleakWidgetOpenedBtn.style.animation = "none";
-            void sleakWidgetOpenedBtn.offsetWidth;
-            sleakWidgetOpenedBtn.style.animation = "";
-
-            // Wait for animation to complete, then hide
-            setTimeout(() => {
-              sleakWidgetOpenedBtn.style.display = "none";
-              sleakWidgetOpenedBtn.classList.remove("image-hide");
+            sleakButton.style.display = "flex";
+            setTimeout(function () {
+              sleakButton.style.opacity = "1";
+              sleakButton.style.transform = "scale(1)";
             }, 300);
-
-            setTimeout(() => {
-              // Show and animate closed button in
-              sleakWidgetClosedBtn.style.display = "flex";
-              sleakWidgetClosedBtn.style.animation = "none";
-              void sleakWidgetClosedBtn.offsetWidth;
-              sleakWidgetClosedBtn.style.animation = "";
-            }, 150);
           }
 
           window.sleakWidgetOpenState = false;
         };
 
         window.toggleFullScreen = async function (expanded = false) {
-          if (isOverlay || !sleakButton) return; // Full screen not applicable for overlay
+          if (isOverlay) return; // Full screen not applicable for overlay
 
           if (expanded === true) {
-            sleakButton.classList.add("full-chat-widget");
             if (sleakWidgetwrap) {
               sleakWidgetwrap.style.height = `calc(100% - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
             }
@@ -990,10 +972,6 @@
             sleakEmbeddedWidget.style.height = ``;
             sleakEmbeddedWidget.style.bottom = ``;
 
-            setTimeout(() => {
-              sleakButton.classList.remove("full-chat-widget");
-            }, 150);
-
             window.sleakWidgetFullScreen = false;
           }
         };
@@ -1001,26 +979,12 @@
         window.toggleSleakWidget = async function () {
           // check if widget is open
           if (window.sleakWidgetOpenState == false) {
-            if (sleakWidgetClosedBtn && sleakWidgetOpenedBtn) {
-              sleakWidgetClosedBtn.classList.add("image-hide");
-              sleakWidgetClosedBtn.style.animation = "none";
-              // Force reflow to restart animation
-              void sleakWidgetClosedBtn.offsetWidth;
-              sleakWidgetClosedBtn.style.animation = "";
-
-              // Wait for animation to complete, then hide
-              setTimeout(() => {
-                sleakWidgetClosedBtn.style.display = "none";
-                sleakWidgetClosedBtn.classList.remove("image-hide");
+            if (sleakButton) {
+              sleakButton.style.opacity = "0";
+              sleakButton.style.transform = "scale(0.8)";
+              setTimeout(function () {
+                sleakButton.style.display = "none";
               }, 300);
-
-              setTimeout(() => {
-                // Show and animate open button in
-                sleakWidgetOpenedBtn.style.display = "flex";
-                sleakWidgetOpenedBtn.style.animation = "none";
-                void sleakWidgetOpenedBtn.offsetWidth;
-                sleakWidgetOpenedBtn.style.animation = "";
-              }, 150);
             }
 
             // Wait for iframe contentWindow to be available

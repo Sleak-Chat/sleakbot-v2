@@ -45,12 +45,12 @@
   box-shadow: 0 25px 50px -12px #00000040;
   height: 100%;
   max-height: 48rem;
-  bottom: 88px;
+  bottom: 0;
   border-radius: 20px;
   width: 100%;
   max-width: 26.25rem;
   overflow: hidden;
-  z-index: 99999999;
+  z-index: 999999999999999999;
   min-height: 0;
   opacity: 0;
   transform: translateY(12px);
@@ -405,7 +405,7 @@
 
 #sleak-buttonwrap {
   pointer-events: auto;
-  z-index: 9999999999999999;
+  z-index: 0;
   opacity: 0;
   height: 80px;
   width: 80px;
@@ -548,7 +548,6 @@
   position: absolute;
 }
 
-#sleak-widget-open,
 #sleak-widget-closed,
 #sleak-button-spinner {
   opacity: 0;
@@ -556,7 +555,6 @@
   animation: imageShow 0.3s ease-in-out forwards;
 }
 
-#sleak-widget-open.image-hide,
 #sleak-widget-closed.image-hide,
 #sleak-button-spinner.image-hide {
   animation: imageHide 0.3s ease-in-out forwards;
@@ -582,10 +580,6 @@
     opacity: 0;
     transform: rotate(90deg) scale(0.3);
   }
-}
-
-#sleak-widget-open {
-  display: none;
 }
 
 #sleak-button-spinner {
@@ -679,7 +673,6 @@
 
   #sleak-body-embed {
     display: none;
-    z-index: 999999999999999999;
     position: relative;
     top: 0;
     bottom: 0;
@@ -698,7 +691,6 @@
   }
 
   #sleak-buttonwrap {
-    z-index: 0;
     inset: unset;
     width: 64px;
     height: 64px;
