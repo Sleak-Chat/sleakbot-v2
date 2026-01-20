@@ -533,7 +533,7 @@
 
             if (popupListWrap) {
               Object.assign(popupListWrap.style, {
-                bottom: `${chatbotConfig.btn_offset.y_mobile + 64}px`,
+                bottom: `${chatbotConfig.btn_offset.y_mobile + 64 + 8}px`,
               });
             }
           } else {
@@ -549,7 +549,7 @@
               Object.assign(popupListWrap.style, {
                 left: `${chatbotConfig.btn_offset.x_mobile}px`,
                 right: `unset`,
-                bottom: `${chatbotConfig.btn_offset.y_mobile + 80}px`,
+                bottom: `${chatbotConfig.btn_offset.y_mobile + 80 + 8}px`,
               });
             }
 
@@ -788,7 +788,7 @@
             closePopupBtn.addEventListener("click", function (event) {
               event.stopPropagation();
               Object.assign(newPopup.style, {
-                transform: "translateY(12px)",
+                transform: "translateY(8px)",
                 opacity: "0",
               });
 
@@ -814,8 +814,8 @@
           // Show the new popup with animation
           newPopup.style.display = "flex";
           newPopup.style.opacity = "0";
-          newPopup.style.transform = "translateY(20px)";
-          newPopup.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+          newPopup.style.transform = "translateY(8px)";
+          newPopup.style.transition = "opacity 0.3s ease, transform 0.3s ease, background-color 0.15s ease";
           setTimeout(function () {
             newPopup.style.opacity = "1";
             newPopup.style.transform = "translateY(0)";
@@ -846,14 +846,31 @@
           sleakEmbeddedWidget.style.display = "flex";
           iframeWidgetbody.style.pointerEvents = "auto";
 
+
+          // Animate in - start from hidden state
+          sleakEmbeddedWidget.style.display = "flex";
+          sleakEmbeddedWidget.style.opacity = "0";
+          sleakEmbeddedWidget.style.transform = "translateY(12px)";
+
+          // Force reflow to ensure initial state is applied
+          void sleakEmbeddedWidget.offsetWidth;
+
+          // Animate to visible state
+          setTimeout(() => {
+            sleakEmbeddedWidget.classList.add("open");
+            sleakEmbeddedWidget.style.opacity = "1";
+            sleakEmbeddedWidget.style.transform = "translateY(0)";
+          }, 10);
+
           // Hide all popups with transition animation
           const allPopups = queryScope.querySelectorAll(".sleak-popup-embed");
           allPopups.forEach((popup) => {
             Object.assign(popup.style, {
-              transform: "translateY(12px)",
+              transform: "translateY(8px)",
               opacity: "0",
             });
           });
+
           // Wait for animation to complete before hiding
           setTimeout(() => {
             allPopups.forEach((popup) => {
@@ -883,21 +900,15 @@
           if (liveChatPopup) liveChatPopup.style.display = "none";
           if (btnPulse) btnPulse.style.display = "none";
           if (isTypingIndicator) isTypingIndicator.style.display = "none";
-
-          // Animate in - start from hidden state
-          sleakEmbeddedWidget.style.display = "flex";
-          sleakEmbeddedWidget.style.opacity = "0";
-          sleakEmbeddedWidget.style.transform = "translateY(12px)";
-
-          // Force reflow to ensure initial state is applied
-          void sleakEmbeddedWidget.offsetWidth;
-
-          // Animate to visible state
-          setTimeout(() => {
-            sleakEmbeddedWidget.classList.add("open");
-            sleakEmbeddedWidget.style.opacity = "1";
-            sleakEmbeddedWidget.style.transform = "translateY(0)";
-          }, 10);
+          
+          if (sleakButton) {
+            sleakButton.style.opacity = "0";
+            sleakButton.style.transform = "scale(0.8)";
+            setTimeout(function () {
+              sleakButton.style.display = "none";
+            }, 300);
+          }
+          
         }
 
         window.closeSleakWidget = function () {
@@ -979,14 +990,6 @@
         window.toggleSleakWidget = async function () {
           // check if widget is open
           if (window.sleakWidgetOpenState == false) {
-            if (sleakButton) {
-              sleakButton.style.opacity = "0";
-              sleakButton.style.transform = "scale(0.8)";
-              setTimeout(function () {
-                sleakButton.style.display = "none";
-              }, 300);
-            }
-
             // Wait for iframe contentWindow to be available
             const sendOpenMessage = (retries = 0) => {
               if (iframeWidgetbody && iframeWidgetbody.contentWindow && iframeWidgetbody.style.pointerEvents === "auto") {
@@ -1051,11 +1054,11 @@
               event.stopPropagation();
               if (sleakPopup) {
                 Object.assign(sleakPopup.style, {
-                  transform: "translateY(12px)",
+                  transform: "translateY(8px)",
                   opacity: "0",
                 });
                 Object.assign(liveChatPopup.style, {
-                  transform: "translateY(12px)",
+                  transform: "translateY(8px)",
                   opacity: "0",
                 });
 
@@ -1097,9 +1100,9 @@
           isTypingIndicator.style.display = "none";
           sleakPopup.style.display = "flex";
           sleakPopup.style.opacity = "0";
-          sleakPopup.style.transform = "translateY(12px)";
+          sleakPopup.style.transform = "translateY(8px)";
           sleakPopup.style.transition =
-            "opacity 0.5s ease, transform 0.5s ease";
+            "opacity 0.3s ease, transform 0.3s ease, background-color 0.15s ease";
           setTimeout(function () {
             sleakPopup.style.opacity = "1";
             sleakPopup.style.transform = "translateY(0)";
