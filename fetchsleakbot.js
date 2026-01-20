@@ -845,6 +845,7 @@
 
           sleakEmbeddedWidget.style.display = "flex";
           iframeWidgetbody.style.pointerEvents = "auto";
+          iframeWidgetbody.style.display = "";
 
 
           // Animate in - start from hidden state
@@ -900,7 +901,7 @@
           if (liveChatPopup) liveChatPopup.style.display = "none";
           if (btnPulse) btnPulse.style.display = "none";
           if (isTypingIndicator) isTypingIndicator.style.display = "none";
-          
+
           if (sleakButton) {
             sleakButton.style.opacity = "0";
             sleakButton.style.transform = "scale(0.8)";
@@ -914,7 +915,7 @@
         window.closeSleakWidget = function () {
           sleakEmbeddedWidget.classList.remove("open");
           iframeWidgetbody.classList.remove("open");
-          iframeWidgetbody.style.pointerEvents = "";
+          iframeWidgetbody.style.pointerEvents = "none";
           sleakEmbeddedWidget.style.opacity = "0";
           sleakEmbeddedWidget.style.transform = "translateY(12px)";
 
@@ -959,6 +960,10 @@
           }
 
           window.sleakWidgetOpenState = false;
+
+          setTimeout(() => {
+            iframeWidgetbody.style.display = "none";
+          }, 300)
         };
 
         window.toggleFullScreen = async function (expanded = false) {
