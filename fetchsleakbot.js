@@ -28,19 +28,10 @@
         : placement;
     // env control
 
-    if (dev === true) {
-      baseUrl = "https://sleak-chat.github.io/sleakbot-v2";
-      widgetBaseUrl = "https://dev.widget.sleak.chat";
-    } else if (scriptSrc.includes("localhost")) {
-      baseUrl = "http://localhost:8001";
-      widgetBaseUrl = "http://localhost:3000";
-    } else {
-      // baseUrl = "https://cdn.sleak.chat";
-      // widgetBaseUrl = "https://widget.sleak.chat";
+    
+    baseUrl = 'BASE_URL';
+    widgetBaseUrl = 'WIDGET_URL';
 
-      baseUrl = "https://sleak-chat.github.io/sleakbot-v2";
-      widgetBaseUrl = "https://widget-v2-sigma.vercel.app";
-    }
     const fileName =
       currentPlacement === "fullwidth"
         ? "sleakbot-fw"
@@ -285,7 +276,7 @@
     }
 
     const fetchChatbotConfig = async (currentChatId) => {
-      const chatbotConfigEndpoint = `${widgetBaseUrl}/api/config?id=${chatbotId}&chat_id=${currentChatId}`;
+      const chatbotConfigEndpoint = `${baseUrl}/api/config?id=${chatbotId}&chat_id=${currentChatId}`;
       const chatbotConfigRequest = await fetch(chatbotConfigEndpoint, {
         method: "get",
         headers: {
@@ -1358,9 +1349,9 @@
 
       window.addEventListener("message", (event) => {
         if (
-          event.origin === "https://dev.widget.sleak.chat" ||
-          event.origin === "https://widget-v2-sigma.vercel.app" ||
-          event.origin === "https://widget.sleak.chat" ||
+          event.origin === 'https://staging.sleak.chat' || 
+          event.origin === 'https://dev.widget.sleak.chat' || 
+          event.origin === 'https://widget.sleak.chat' ||
           event.origin === "http://localhost:3000"
         ) {
           // console.log("Received message:", event); 
@@ -1543,7 +1534,7 @@
           };
 
           function extractEventConfig(event) {
-            const eventConfig = {};
+            let eventConfig = {};
 
             // For form submissions, extract the target element details
             if (event.type === "submit" || event.type === "formSubmit") {
