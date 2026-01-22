@@ -300,8 +300,6 @@
         } else {
           localStorage.setItem(`sleakChatId_${chatbotId}`, newChatId);
         }
-
-        return fetchChatbotConfig(newChatId);
       }
 
       return rawChatbotConfigResponse;
