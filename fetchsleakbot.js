@@ -662,7 +662,7 @@
         if (!isOverlay && sleakBtnContainer) {
           var btnColor = chatbotConfig.primary_color;
           sleakBtnContainer.style.backgroundColor = btnColor;
-          if (widgetAppearance.button?.background) {
+          if (widgetAppearance.button?.background && widgetAppearance.button?.background === "image") {
             sleakBtnContainer.style.backgroundImage = `url("${widgetAppearance.button?.background}")`;
             if (sleakWidgetClosedBtn) sleakWidgetClosedBtn.remove();
           } else if (
