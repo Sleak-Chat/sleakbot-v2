@@ -410,8 +410,8 @@
   pointer-events: auto;
   z-index: 0;
   opacity: 0;
-  height: 80px;
-  width: 80px;
+  height: 64px;
+  width: 64px;
   bottom: 0;
   right: 0;
   position: absolute;

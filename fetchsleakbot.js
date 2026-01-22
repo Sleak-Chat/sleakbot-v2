@@ -310,6 +310,34 @@
 
     const widgetAppearance = chatbotConfig?.widget_appearance;
 
+    // Button offset helper: use widgetAppearance.button.offset if available, otherwise fall back to chatbotConfig.btn_offset
+    const buttonOffset = (() => {
+      const newOffset = widgetAppearance?.button?.offset;
+      const oldOffset = chatbotConfig?.btn_offset;
+      
+      if (newOffset) {
+        return {
+          x_mobile: newOffset.x_mobile ? parseFloat(newOffset.x_mobile) : (oldOffset?.x_mobile || 0),
+          y_mobile: newOffset.y_mobile ? parseFloat(newOffset.y_mobile) : (oldOffset?.y_mobile || 0),
+          x_desktop: newOffset.x_desktop ? parseFloat(newOffset.x_desktop) : (oldOffset?.x_desktop || 0),
+          y_desktop: newOffset.y_desktop ? parseFloat(newOffset.y_desktop) : (oldOffset?.y_desktop || 0),
+          align_right: {
+            mobile: newOffset.align_right?.mobile !== undefined ? newOffset.align_right.mobile : (oldOffset?.align_right?.mobile !== undefined ? oldOffset.align_right.mobile : true),
+            desktop: newOffset.align_right?.desktop !== undefined ? newOffset.align_right.desktop : (oldOffset?.align_right?.desktop !== undefined ? oldOffset.align_right.desktop : true)
+          }
+        };
+      }
+      
+      // Fallback to old structure
+      return oldOffset || {
+        x_mobile: 0,
+        y_mobile: 0,
+        x_desktop: 0,
+        y_desktop: 0,
+        align_right: { mobile: true, desktop: true }
+      };
+    })();
+
     let chatCreated = rawChatbotConfigResponse.data.chat_exists;
     let widgetOpenFlag = localStorage.getItem(`sleakWidget_${chatbotId}`);
 
@@ -451,28 +479,28 @@
         function setStylingMobile() {
           if (isOverlay && chatInput) {
             Object.assign(chatInput.style, {
-              bottom: `${chatbotConfig.btn_offset.y_mobile}px`,
+              bottom: `${buttonOffset.y_mobile}px`,
             });
 
             if (popupListWrap) {
               Object.assign(popupListWrap.style, {
-                bottom: `${chatbotConfig.btn_offset.y_mobile + 64 + 8}px`,
+                bottom: `${buttonOffset.y_mobile + 64 + 8}px`,
               });
             }
           } else {
             if (sleakButton) {
               Object.assign(sleakButton.style, {
                 left: `unset`,
-                right: `${chatbotConfig.btn_offset.x_mobile}px`,
-                bottom: `${chatbotConfig.btn_offset.y_mobile}px`,
+                right: `${buttonOffset.x_mobile}px`,
+                bottom: `${buttonOffset.y_mobile}px`,
               });
             }
 
             if (popupListWrap) {
               Object.assign(popupListWrap.style, {
-                right: `${chatbotConfig.btn_offset.x_mobile}px`,
+                right: `${buttonOffset.x_mobile}px`,
                 left: `unset`,
-                bottom: `${chatbotConfig.btn_offset.y_mobile + 64 + 8}px`,
+                bottom: `${buttonOffset.y_mobile + 64 + 8}px`,
               });
             }
           }
@@ -481,35 +509,35 @@
         function setStylingDesktop() {
           if (isOverlay && chatInput) {
             Object.assign(chatInput.style, {
-              bottom: `${chatbotConfig.btn_offset.y_desktop}px`,
+              bottom: `${buttonOffset.y_desktop}px`,
             });
 
             if (popupListWrap) {
               Object.assign(popupListWrap.style, {
-                bottom: `${chatbotConfig.btn_offset.y_desktop + 80 + 8}px`,
+                bottom: `${buttonOffset.y_desktop + 80 + 8}px`,
               });
             }
           } else {
             if (sleakButton) {
               Object.assign(sleakButton.style, {
-                right: `${chatbotConfig.btn_offset.x_desktop}px`,
-                bottom: `${chatbotConfig.btn_offset.y_desktop}px`,
+                right: `${buttonOffset.x_desktop}px`,
+                bottom: `${buttonOffset.y_desktop}px`,
               });
             }
 
             if (popupListWrap) {
               Object.assign(popupListWrap.style, {
-                right: `${chatbotConfig.btn_offset.x_desktop}px`,
+                right: `${buttonOffset.x_desktop}px`,
                 left: `unset`,
-                bottom: `${chatbotConfig.btn_offset.y_desktop + 80 + 8}px`,
+                bottom: `${buttonOffset.y_desktop + 80 + 8}px`,
               });
             }
 
             if (sleakWidgetwrap) {
-              sleakWidgetwrap.style.right = `${chatbotConfig.btn_offset.x_desktop}px`;
-              sleakWidgetwrap.style.bottom = `${chatbotConfig.btn_offset.y_desktop}px`;
-              sleakWidgetwrap.style.height = `calc(100% - 98px - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
-              sleakWidgetwrap.style.width = `calc(100% - (2 * ${chatbotConfig.btn_offset.x_desktop}px))`;
+              sleakWidgetwrap.style.right = `${buttonOffset.x_desktop}px`;
+              sleakWidgetwrap.style.bottom = `${buttonOffset.y_desktop}px`;
+              sleakWidgetwrap.style.height = `calc(100% - 98px - (${buttonOffset.y_desktop}px + 20px))`;
+              sleakWidgetwrap.style.width = `calc(100% - (${buttonOffset.x_desktop}px + 20px))`;
             }
           }
         }
@@ -517,28 +545,28 @@
         function setStylingMobileMirrored() {
           if (isOverlay && chatInput) {
             Object.assign(chatInput.style, {
-              bottom: `${chatbotConfig.btn_offset.y_mobile}px`,
+              bottom: `${buttonOffset.y_mobile}px`,
             });
 
             if (popupListWrap) {
               Object.assign(popupListWrap.style, {
-                bottom: `${chatbotConfig.btn_offset.y_mobile + 64 + 8}px`,
+                bottom: `${buttonOffset.y_mobile + 64 + 8}px`,
               });
             }
           } else {
             if (sleakButton) {
               Object.assign(sleakButton.style, {
                 right: `unset`,
-                left: `${chatbotConfig.btn_offset.x_mobile}px`,
-                bottom: `${chatbotConfig.btn_offset.y_mobile}px`,
+                left: `${buttonOffset.x_mobile}px`,
+                bottom: `${buttonOffset.y_mobile}px`,
               });
             }
 
             if (popupListWrap) {
               Object.assign(popupListWrap.style, {
-                left: `${chatbotConfig.btn_offset.x_mobile}px`,
+                left: `${buttonOffset.x_mobile}px`,
                 right: `unset`,
-                bottom: `${chatbotConfig.btn_offset.y_mobile + 80 + 8}px`,
+                bottom: `${buttonOffset.y_mobile + 80 + 8}px`,
               });
             }
 
@@ -560,28 +588,28 @@
         function setStylingDesktopMirrored() {
           if (isOverlay && chatInput) {
             Object.assign(chatInput.style, {
-              bottom: `${chatbotConfig.btn_offset.y_desktop}px`,
+              bottom: `${buttonOffset.y_desktop}px`,
             });
 
             if (popupListWrap) {
               Object.assign(popupListWrap.style, {
-                bottom: `${chatbotConfig.btn_offset.y_desktop + 64}px`,
+                bottom: `${buttonOffset.y_desktop + 64}px`,
               });
             }
           } else {
             if (sleakWidgetwrap) {
               Object.assign(sleakWidgetwrap.style, {
                 justifyContent: "flex-start",
-                left: `${chatbotConfig.btn_offset.x_desktop}px`,
-                bottom: `${chatbotConfig.btn_offset.y_desktop}px`,
+                left: `${buttonOffset.x_desktop}px`,
+                bottom: `${buttonOffset.y_desktop}px`,
               });
             }
 
             if (popupListWrap) {
               Object.assign(popupListWrap.style, {
-                left: `${chatbotConfig.btn_offset.x_desktop}px`,
+                left: `${buttonOffset.x_desktop}px`,
                 right: `unset`,
-                bottom: `${chatbotConfig.btn_offset.y_desktop + 80}px`,
+                bottom: `${buttonOffset.y_desktop + 80}px`,
               });
             }
 
@@ -591,15 +619,10 @@
 
             if (sleakButton) {
               Object.assign(sleakButton.style, {
-                right: "unset",
-                left: `${chatbotConfig.btn_offset.x_desktop}px`,
-                bottom: `${chatbotConfig.btn_offset.y_desktop}px`,
+                right: "",
+                left: `${buttonOffset.x_desktop}px`,
+                bottom: `${buttonOffset.y_desktop}px`,
               });
-              sleakButton.style.setProperty(
-                "transform",
-                "scaleX(-1)",
-                "important"
-              );
             }
           }
         }
@@ -610,8 +633,8 @@
           viewportWidth2 = window.innerWidth;
           if (viewportWidth2 < 480) {
             if (
-              !chatbotConfig.btn_offset.align_right ||
-              chatbotConfig.btn_offset.align_right.mobile !== false
+              !buttonOffset.align_right ||
+              buttonOffset.align_right.mobile !== false
             ) {
               setStylingMobile();
             } else {
@@ -619,8 +642,8 @@
             }
           } else {
             if (
-              !chatbotConfig.btn_offset.align_right ||
-              chatbotConfig.btn_offset.align_right.desktop !== false
+              !buttonOffset.align_right ||
+              buttonOffset.align_right.desktop !== false
             ) {
               setStylingDesktop();
             } else {
@@ -960,17 +983,17 @@
 
           if (expanded === true) {
             if (sleakWidgetwrap) {
-              sleakWidgetwrap.style.height = `calc(100% - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
+              sleakWidgetwrap.style.height = `calc(100% - (${buttonOffset.y_desktop}px + 20px))`;
             }
 
             sleakEmbeddedWidget.style.maxWidth = `45rem`;
-            sleakEmbeddedWidget.style.maxHeight = `calc(${document.body.clientHeight}px - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
+            sleakEmbeddedWidget.style.maxHeight = `calc(${document.body.clientHeight}px + (${buttonOffset.y_desktop}px + 20px))`;
             sleakEmbeddedWidget.style.bottom = `0`;
 
             window.sleakWidgetFullScreen = true;
           } else {
             if (sleakWidgetwrap) {
-              sleakWidgetwrap.style.height = `calc(100% - 98px - (2 * ${chatbotConfig.btn_offset.y_desktop}px))`;
+              sleakWidgetwrap.style.height = `calc(100% - 98px - (${buttonOffset.y_desktop}px + 20px))`;
             }
             sleakEmbeddedWidget.style.maxWidth = ``;
             sleakEmbeddedWidget.style.maxHeight = ``;
