@@ -1,11 +1,12 @@
 {
   "scripts": {
-    "dev": "esbuild sleakbot.js fetchsleakbot.js --outdir=./ --allow-overwrite --minify && esbuild sleakbot.css --outdir=./ --allow-overwrite --minify && html-minifier --input-dir ./ --output-dir ./ --file-ext html --collapse-whitespace --remove-comments --minify-css true --minify-js true",
-    "build": "esbuild sleakbot.js fetchsleakbot.js --outdir=./ --allow-overwrite --minify && esbuild sleakbot.css --outdir=./ --allow-overwrite --minify && html-minifier --input-dir ./ --output-dir ./ --file-ext html --collapse-whitespace --remove-comments --minify-css true --minify-js true",
-    "start": "next start"
+    "build": "node build.js",
+    "dev": "WIDGET_URL=http://localhost:3000 BASE_URL=http://localhost:8788 npm run build && npx wrangler pages dev dist --port 8788"
   },
   "dependencies": {
-    "esbuild": "^0.18.11",
-    "html-minifier": "^4.0.0"
+    "esbuild": "^0.18.11"
+  },
+  "devDependencies": {
+    "wrangler": "^4.59.3"
   }
 }

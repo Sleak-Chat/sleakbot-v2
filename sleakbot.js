@@ -608,7 +608,7 @@ async function sleakScript() {
         };
 
         function extractEventConfig(event) {
-          const eventConfig = {};
+          let eventConfig = {};
 
           // For form submissions, extract the target element details
           if (event.type === 'submit' || event.type === 'formSubmit') {
