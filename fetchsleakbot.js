@@ -662,15 +662,15 @@
         if (!isOverlay && sleakBtnContainer) {
           var btnColor = chatbotConfig.primary_color;
           sleakBtnContainer.style.backgroundColor = btnColor;
-          if (chatbotConfig.background_image) {
-            sleakBtnContainer.style.backgroundImage = `url("${chatbotConfig.background_image}")`;
+          if (widgetAppearance.button?.background && widgetAppearance.button?.background === "image") {
+            sleakBtnContainer.style.backgroundImage = `url("${widgetAppearance.button?.background}")`;
             if (sleakWidgetClosedBtn) sleakWidgetClosedBtn.remove();
           } else if (
-            chatbotConfig.widget_appearance?.widget_icon &&
-            chatbotConfig.widget_appearance?.widget_icon !== ""
+            widgetAppearance.button?.image_url &&
+            widgetAppearance.button?.image_url !== ""
           ) {
             sleakWidgetClosedBtn.src =
-              chatbotConfig.widget_appearance.widget_icon;
+              widgetAppearance.button?.image_url;
           }
 
           function slkShowBtn() {
