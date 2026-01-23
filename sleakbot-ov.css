@@ -47,12 +47,12 @@
   top: 0;
   display: none;
   cursor: grab;
-  width: calc(100% - 128px);
+  width: calc(100% - 160px);
   justify-content: center;
   align-items: start;
   padding: 10px 0;
   padding-bottom: 40px;
-  margin: 0 64px;
+  margin: 0 80px;
 }
 
 #sleak-mobile-handle span {

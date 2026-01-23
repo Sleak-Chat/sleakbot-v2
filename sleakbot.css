@@ -72,7 +72,7 @@
   top: 0;
   display: none;
   cursor: grab;
-  width: calc(100% - 128px);
+  width: calc(100% - 180px);
   justify-content: center;
   align-items: start;
   padding: 10px 0;
