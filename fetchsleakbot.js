@@ -662,15 +662,18 @@
         if (!isOverlay && sleakBtnContainer) {
           var btnColor = chatbotConfig.primary_color;
           sleakBtnContainer.style.backgroundColor = btnColor;
-          if (widgetAppearance.button?.background && widgetAppearance.button?.background === "image") {
-            sleakBtnContainer.style.backgroundImage = `url("${widgetAppearance.button?.background}")`;
+          if (widgetAppearance.button?.background && widgetAppearance.button?.background === "image" && widgetAppearance.button?.image_url !== "") {
+            sleakBtnContainer.style.backgroundImage = `url("${widgetAppearance.button?.image_url}")`;
+            if (sleakWidgetClosedBtn) sleakWidgetClosedBtn.remove();
+          } else if (chatbotConfig.background_image) {
+            sleakBtnContainer.style.backgroundImage = `url("${chatbotConfig.background_image}")`;
             if (sleakWidgetClosedBtn) sleakWidgetClosedBtn.remove();
           } else if (
-            widgetAppearance.button?.image_url &&
-            widgetAppearance.button?.image_url !== ""
+            widgetAppearance.button?.icon_url &&
+            widgetAppearance.button?.icon_url !== ""
           ) {
             sleakWidgetClosedBtn.src =
-              widgetAppearance.button?.image_url;
+              widgetAppearance.button?.icon_url;
           }
 
           function slkShowBtn() {
