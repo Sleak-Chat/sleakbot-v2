@@ -5,24 +5,6 @@
     return;
   }
 
-  const whitelistedChatbots = [
-    "0d1ea4ce-afb8-43d2-8582-a554d2ce71f4",
-    "1799d502-9bda-47f3-996d-a32d1a28241a",
-    "30643ec7-2970-43d6-91f0-b6990ddd0ff4",
-    "32f763e1-e8d5-41f0-8ec2-d4ed26077f24",
-    "4416ce78-4ac7-434c-bc3e-3bbf068f0ca3",
-    "4b332de9-418c-40df-87f9-d8d0317ad0d1",
-    "5185d9a7-eef9-47c3-a22f-510f9ad124af",
-    "593bcc3c-457a-41b7-822c-bc5746da408d",
-    "5e9f74e4-afc3-489d-9b58-f1d76aa0ce98",
-    // "7785e220-6b5b-4c3c-80ba-f08f52ac99de",
-    "793042b0-1a02-4cec-ae45-502cb7983d17",
-    "9cf6140d-b2c7-483c-a068-af49e3454d2a",
-    "b1f88669-3011-4ed7-86af-b3853e2b3a52",
-    "de9497dc-93bc-451b-b240-ba916b3a3c22",
-    "f49eaa90-e06b-49c6-8696-5771ff3f5c22",
-  ];
-
   const sleakbotScriptTag = document.querySelector("#sleakbot");
   const scriptCookies = sleakbotScriptTag.getAttribute("cookies");
   const scriptSrc = sleakbotScriptTag.getAttribute("src");
@@ -160,18 +142,14 @@
         const instancePlacement = instance.getAttribute("placement");
         const devAttr = instance.getAttribute("dev");
         const dev = devAttr ? JSON.parse(devAttr) : null;
-        if (dev || whitelistedChatbots.includes(chatbotId)){
-          injectSleakScript(chatbotId, instanceNumber, dev, instancePlacement);
-        }
+        injectSleakScript(chatbotId, instanceNumber, dev, instancePlacement);
       });
     });
   } else {
     const chatbotId = sleakbotScriptTag.getAttribute("chatbot-id");
     const devAttr = sleakbotScriptTag.getAttribute("dev");
     const dev = devAttr ? JSON.parse(devAttr) : null;
-    if (dev || whitelistedChatbots.includes(chatbotId)){
-      injectSleakScript(chatbotId, null, dev, placement);
-    }
+    injectSleakScript(chatbotId, null, dev, placement);
   }
 
   async function executeSleakbotJs(
