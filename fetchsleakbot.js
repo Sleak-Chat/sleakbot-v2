@@ -6,7 +6,6 @@
   }
 
   const whitelistedChatbots = [
-    "0d1ea4ce-afb8-43d2-8582-a554d2ce71f4",
     "1799d502-9bda-47f3-996d-a32d1a28241a",
     "30643ec7-2970-43d6-91f0-b6990ddd0ff4",
     "32f763e1-e8d5-41f0-8ec2-d4ed26077f24",
@@ -1395,7 +1394,6 @@
 
       window.addEventListener("message", (event) => {
         if (
-          event.origin === 'https://staging.sleak.chat' || 
           event.origin === 'https://dev.widget.sleak.chat' || 
           event.origin === 'https://widget.sleak.chat' ||
           event.origin === "http://localhost:3000"
