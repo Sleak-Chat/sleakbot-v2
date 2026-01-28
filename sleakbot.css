@@ -84,9 +84,8 @@
   display: inline-block;
   width: 64px;
   height: 4px;
-  background-color: #fff;
+  background-color: color-mix(in srgb, black 15%, white);;
   border-radius: 24px;
-  opacity: .6;
 }
 
 #sleak-widget-iframe {
