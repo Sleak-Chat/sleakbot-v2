@@ -661,7 +661,7 @@
     height: -webkit-fill-available;
     width: 100vw !important;
     min-width: 100vw;
-    max-height: calc(100svh * 0.95);
+    max-height: calc(100svh * 0.98);
     transition: none !important;
   }
 

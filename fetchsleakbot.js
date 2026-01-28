@@ -536,7 +536,7 @@
             if (sleakWidgetwrap) {
               sleakWidgetwrap.style.right = `${buttonOffset.x_desktop}px`;
               sleakWidgetwrap.style.bottom = `${buttonOffset.y_desktop}px`;
-              sleakWidgetwrap.style.height = `calc(100% - 98px - (${buttonOffset.y_desktop}px + 20px))`;
+              sleakWidgetwrap.style.height = `calc(100% - 40px - (${buttonOffset.y_desktop}px + 20px))`;
               sleakWidgetwrap.style.width = `calc(100% - (${buttonOffset.x_desktop}px + 20px))`;
             }
           }
