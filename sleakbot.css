@@ -42,11 +42,11 @@
   display: none;
   box-shadow: 0 25px 50px -12px #00000040;
   height: 100%;
-  max-height: 48em;
+  max-height: 768px;
   bottom: 0;
   border-radius: 20px;
   width: 100%;
-  max-width: 26.25em;
+  max-width: 420px;
   overflow: hidden;
   z-index: 999999999999999999;
   min-height: 0;

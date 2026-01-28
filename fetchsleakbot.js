@@ -1035,10 +1035,6 @@
               openSleakWidget();
             }
 
-            if (window.matchMedia("(max-width: 768px)").matches) {
-              document.body.style.overflow = "hidden";
-            }
-
             /// check for first button click of page load
             if (firstButtonClick) {
               if (!widgetOpenFlag) {
@@ -1054,10 +1050,6 @@
             }
           } else if (window.sleakWidgetOpenState == true) {
             window.closeSleakWidget();
-
-            if (window.matchMedia("(max-width: 768px)").matches) {
-              document.body.style.overflow = "hidden";
-            }
           }
         };
 
